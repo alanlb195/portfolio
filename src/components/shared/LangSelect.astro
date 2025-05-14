@@ -1,0 +1,52 @@
+---
+import { getLangFromUrl } from "@/i18n/utils";
+
+import { languages } from "@/i18n/ui";
+const lang = getLangFromUrl(Astro.url);
+
+const currentPath = Astro.url.pathname;
+const pathWithoutLang = currentPath.replace(/^\/[a-z]{2}(\/|$)/, "/");
+
+function getPathWithLang(lang: string) {
+    return `/${lang}${pathWithoutLang}`;
+}
+---
+
+<div class="lang-switch-group" id="lang-switch">
+    {
+        Object.entries(languages).map(([code, label]) => (
+            <a
+                href={getPathWithLang(code)}
+                class:list={{
+                    "active-link": lang === code,
+                }}
+                class="lang-switch-button"
+            >
+                {label}
+            </a>
+        ))
+    }
+</div>
+
+<!-- TODO:  fix the bug that causes changing languages ​​to be taken as a route to return-->
+
+<!-- <script>
+    import { navigate } from "astro:transitions/client";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const langSwitch = document.getElementById("lang-switch");
+        console.log(langSwitch);
+        
+        if (!langSwitch) return;
+
+        langSwitch.querySelectorAll("a").forEach((link) => {
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const href = link.getAttribute("href");
+                if (href) {
+                    navigate(href, { history: 'replace' });
+                }
+            });
+        });
+    });
+</script> -->

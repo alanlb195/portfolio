@@ -1,0 +1,47 @@
+---
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const currentPath = Astro.url.pathname;
+const pathWithoutLang = currentPath.replace(/^\/[a-z]{2}(\/|$)/, "/");
+
+import ThemeToggle from "@/components/shared/ThemeToggle.tsx";
+import LangSelect from "./LangSelect.astro";
+---
+
+<nav class="bg-white shadow dark:bg-gray-800 rounded-2xl">
+    <div
+        class="container flex items-center justify-center p-6 mx-auto text-gray-600 dark:text-gray-300 gap-3"
+    >
+        <!-- Links -->
+        <a
+            href=`/${lang}`
+            class:list={{
+                "active-link": pathWithoutLang === "/portfolio",
+            }}
+            class="base-nav-button"
+        >
+            {t("nav.home")}</a
+        >
+
+        <a
+            href=`/${lang}/blog`
+            class:list={{
+                "active-link": pathWithoutLang === "/blog",
+            }}
+            class="base-nav-button"
+        >
+            {t("nav.about")}
+        </a>
+
+        <!-- Language Selector -->
+        <LangSelect />
+
+        <!-- Dark / Light -->
+        <div class="w-[56px] h-[44px] flex items-center justify-center">
+            <ThemeToggle client:only="react" />
+        </div>
+    </div>
+</nav>

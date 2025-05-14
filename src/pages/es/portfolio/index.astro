@@ -1,0 +1,22 @@
+---
+import Presentation from "@/components/portfolio/Presentation.astro";
+import { Technologies } from "@/components/portfolio/Technologies";
+import MainLayout from "@/layouts/MainLayout.astro";
+import Certificates from "@/components/portfolio/Certificates.astro";
+---
+
+<MainLayout>
+    <article>
+        <Presentation />
+
+        <!-- Swiper  -->
+        <Technologies client:only="react" />
+
+        <!--Todo: My Projects - only best projects, not all -->
+
+        <!-- Todo: More about me - not a simple short about me,  -->
+
+        <!-- Todo: certificates paginated with view more -->
+        <Certificates />
+    </article>
+</MainLayout>

@@ -1,0 +1,52 @@
+---
+import "@/styles/global.css";
+
+import Navbar from "@/components/shared/Navbar.astro";
+import Footer from "@/components/shared/Footer.astro";
+
+import { getLangFromUrl } from "../i18n/utils";
+const lang = getLangFromUrl(Astro.url);
+
+import { ClientRouter } from "astro:transitions";
+
+interface Props {
+    title?: string;
+}
+
+const { title = "Alan Dev" } = Astro.props;
+---
+
+<html lang={lang}>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{title}</title>
+        <ClientRouter />
+    </head>
+    <body class="min-h-screen bg-gray-300 dark:bg-gray-900">
+        <main class="container mx-auto px-4">
+            <Navbar />
+            <slot />
+            <Footer />
+        </main>
+    </body>
+</html>
+
+<script is:inline>
+    function getPreferredTheme() {
+        const storedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        return storedTheme === "dark" || (!storedTheme && prefersDark);
+    }
+
+    function applyTheme() {
+        const shouldUseDark = getPreferredTheme();
+        document.documentElement.classList.toggle("dark", shouldUseDark);
+    }
+
+    applyTheme();
+
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+
+    document.addEventListener("astro:after-swap", applyTheme);
+</script>
