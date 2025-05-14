@@ -22,5 +22,10 @@ export default defineConfig({
     mode: 'standalone'
   }),
 
+  server: {
+    host: '0.0.0.0',
+    port: 4321,
+  },
+
   integrations: [mdx(), react()]
 });
