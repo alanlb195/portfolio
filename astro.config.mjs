@@ -9,6 +9,8 @@ import mdx from '@astrojs/mdx';
 
 import react from '@astrojs/react';
 
+import db from '@astrojs/db';
+
 // https://astro.build/config
 export default defineConfig({
   vite: {
@@ -27,5 +29,5 @@ export default defineConfig({
     port: 4321,
   },
 
-  integrations: [mdx(), react()]
+  integrations: [mdx(), react(), db()]
 });

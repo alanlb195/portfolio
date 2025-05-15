@@ -2,11 +2,16 @@
 import { Image } from "astro:assets";
 
 import { basic } from "@/config/config.json";
-import heroImage from "/public/assets/cv/alan.jpeg";
+import heroImage from "/public/assets/cv/profile_image.jpeg";
 
 import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+const linkedInUrl =
+    lang === "en"
+        ? "https://www.linkedin.com/in/alan-lb195?locale=en_US"
+        : "https://www.linkedin.com/in/alan-lb195";
 ---
 
 <section class="py-5 px-4 sm:py-10 lg:py-16">
@@ -14,14 +19,16 @@ const t = useTranslations(lang);
         <div class="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
             <div class="relative flex justify-center">
                 <Image
-                    class="w-full md:max-w-md lg:max-w-md rounded-xl"
+                    class="w-full md:max-w-md lg:max-w-md rounded-full"
                     src={heroImage}
                     loading="eager"
                     alt="Astro Resume Theme - Alan"
                 />
             </div>
             <div>
-                <p class="text-lg text-offset text-black dark:text-white">
+                <p
+                    class="animate-bounce text-lg text-offset text-black dark:text-white"
+                >
                     {t("presentation.profession")}
                 </p>
 
@@ -73,7 +80,7 @@ const t = useTranslations(lang);
                     </a>
 
                     <a
-                        href="https://www.linkedin.com/in/alan-lb195"
+                        href={linkedInUrl}
                         title="LinkedIn"
                         target="_blank"
                         rel="noopener noreferrer"

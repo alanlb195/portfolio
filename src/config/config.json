@@ -6,7 +6,8 @@
         "github_light_icon": "/assets/svgs/GitHub_light.svg",
         "gmail_icon": "/assets/svgs/gmail.svg",
         "linkedin_icon": "/assets/svgs/linkedin.svg",
-        "download_icon": "/assets/svgs/Download.svg"
+        "download_icon": "/assets/svgs/Download.svg",
+        "award_icon": "/assets/svgs/Award.svg"
     },
     "experiences": [
         {

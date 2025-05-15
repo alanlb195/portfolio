@@ -1,65 +1,15 @@
 ---
 import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import CertificateList from "./CertificateList";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-
-import enCertificates from "@/i18n/translations/en/certificates";
-import esCertificates from "@/i18n/translations/es/certificates";
-
-const certificates = lang === "es" ? esCertificates : enCertificates;
 ---
 
 <section class="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+    <p class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
         {t("certifications.title")}
-    </h2>
+    </p>
 
-    <div class="space-y-6">
-        {
-            certificates.map((cert) => (
-                <div class="flex flex-col sm:flex-row justify-between gap-4 bg-white dark:bg-gray-800 shadow rounded-2xl p-5 w-full">
-                    <div class="flex-1 space-y-2">
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-                            {cert.title}
-                        </h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                            <span class="font-semibold">{cert.provider}</span> ·{" "}
-                            {cert.date}
-                        </p>
-
-                        <div class="flex flex-wrap gap-2">
-                            {cert.technologies.map((tech) => (
-                                <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs px-2 py-1 rounded-full">
-                                    {tech}
-                                </span>
-                            ))}
-                        </div>
-
-                        <p class="text-sm text-gray-700 dark:text-gray-300">
-                            {cert.description}
-                        </p>
-                    </div>
-
-                    <div class="flex flex-col items-end justify-between">
-                        <a
-                            href={cert.certificateUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="mt-4 text-yellow-500 hover:text-yellow-400 transition-colors"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-8 w-8"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path d="M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8L12 2Z" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            ))
-        }
-    </div>
+      <CertificateList lang={lang} client:only="react" />
 </section>
