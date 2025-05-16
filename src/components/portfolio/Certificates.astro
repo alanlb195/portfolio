@@ -1,9 +1,21 @@
 ---
 import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 import CertificateList from "./CertificateList";
+import { getCertificatesPaginated } from "@/actions/portfolio/get-certificates-paginated";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+const { data, error } = await Astro.callAction(getCertificatesPaginated, {
+    limit: 10,
+    offset: 0,
+});
+
+if (error) {
+    console.log(error);
+} else {
+    console.log(data);
+}
 ---
 
 <section class="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -11,5 +23,5 @@ const t = useTranslations(lang);
         {t("certifications.title")}
     </p>
 
-      <CertificateList lang={lang} client:only="react" />
+    <CertificateList lang={lang} client:only="react" />
 </section>
