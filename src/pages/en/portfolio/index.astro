@@ -11,9 +11,21 @@ import Projects from "@/components/portfolio/Projects.astro";
         <Presentation />
 
         <!-- Swiper  -->
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <p
+                class="animate-bounce mb-15 text-2xl text-offset font-bold text-black dark:text-white"
+            >
+                Technologies I work in
+            </p>
+        </div>
         <Technologies client:only="react">
-            <div slot="fallback" class="h-[300px] flex items-center justify-center">
-                <div class="animate-pulse bg-gray-300 dark:bg-gray-900 rounded-lg w-full h-full">
+            <div
+                slot="fallback"
+                class="h-[450px] flex items-center justify-center"
+            >
+                <div
+                    class="animate-pulse bg-gray-300 dark:bg-gray-900 rounded-lg w-full h-full"
+                >
                 </div>
             </div>
         </Technologies>

@@ -22,6 +22,14 @@ export const Technologies = () => {
                     disableOnInteraction: false,
                     pauseOnMouseEnter: true,
                 }}
+                breakpoints={{
+                    1024: {
+                        slidesPerView: 5,
+                    },
+                    0: {
+                        slidesPerView: 3,
+                    },
+                }}
                 loop={true}
                 modules={[Grid, Autoplay]}
                 className="mySwiper h-[300px]"

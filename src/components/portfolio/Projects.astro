@@ -1,32 +1,40 @@
 ---
 import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import { actions } from "astro:actions";
+
+import ProjectCard from "./ProjectCard.astro";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-import enProjects from "@/i18n/translations/en/portfolio/projects_array";
-import esProjects from "@/i18n/translations/es/portfolio/projects_array";
+const { data, error } = await Astro.callAction(actions.getProjectsPaginated, {
+    limit: 5,
+    offset: 0,
+});
 
-const projects = lang === "es" ? esProjects : enProjects;
+if (error) {
+    throw new Error("Error getting projects", error);
+}
+
+const projects = data?.data ?? [];
 ---
 
 <section class="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
     <div class="text-gray-900 dark:text-white mb-6">
-        <p class="text-white text-2xl font-bold">{t("projects.title")}</p>
+        <p class="text-dark dark:text-white text-2xl font-bold mb-10">{t("projects.title")}</p>
 
-        <!-- {
-            projects.map((project) => (
-                <div
-                    class="rounded-2xl border border-gray-200 shadow-md hover:shadow-lg transition p-4"
-                />
-
-                <img
-                    src={project.image}
-                    alt={project.title}
-                    class="rounded-xl w-full h-48 object-cover mb-4"
-                />
-
-            ))
-        } -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {
+                projects.map((project) => (
+                    <ProjectCard
+                        title={project.title_en}
+                        description={project.description_en}
+                        technologies={project.technologies}
+                        repositoryUrl={project.repositoryUrl}
+                        projectUrl={project.projectUrl}
+                    />
+                ))
+            }
+        </div>
     </div>
 </section>

@@ -3,6 +3,7 @@ import Presentation from "@/components/portfolio/Presentation.astro";
 import { Technologies } from "@/components/portfolio/Technologies";
 import MainLayout from "@/layouts/MainLayout.astro";
 import Certificates from "@/components/portfolio/Certificates.astro";
+import Projects from "@/components/portfolio/Projects.astro";
 ---
 
 <MainLayout>
@@ -10,9 +11,15 @@ import Certificates from "@/components/portfolio/Certificates.astro";
         <Presentation />
 
         <!-- Swiper  -->
-        <Technologies client:only="react" />
+        <Technologies client:only="react">
+            <div slot="fallback" class="h-[300px] flex items-center justify-center">
+                <div class="animate-pulse bg-gray-300 dark:bg-gray-900 rounded-lg w-full h-full">
+                </div>
+            </div>
+        </Technologies>
 
         <!--Todo: My Projects - only best projects, not all -->
+        <Projects />
 
         <!-- Todo: More about me - not a simple short about me,  -->
 
