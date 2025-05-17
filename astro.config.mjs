@@ -8,6 +8,7 @@ import db from '@astrojs/db';
 
 
 import vercel from '@astrojs/vercel';
+import sitemap from '@astrojs/sitemap';
 
 
 // https://astro.build/config
@@ -15,9 +16,10 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
   },
+  site: 'https://www.alandev.site',
 
   prefetch: true,
   output:'server',
-  integrations: [mdx(), react(), db()],
+  integrations: [mdx(), react(), db(), sitemap()],
   adapter: vercel(),
 });

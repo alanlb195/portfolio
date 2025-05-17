@@ -20,6 +20,37 @@ const { title = "Alan Dev" } = Astro.props;
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.png " />
+        <link rel="sitemap" href="/sitemap-index.xml" />
+        <meta
+            name="description"
+            content="Alan Dev – Desarrollador web, blog de tecnología y proyectos personales."
+        />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Alan Dev" />
+        <meta
+            name="keywords"
+            content="desarrollador web, frontend, blog de programación, Astro, JavaScript, México"
+        />
+        <meta property="og:title" content={title} />
+        <meta
+            property="og:description"
+            content="Bienvenido al sitio de Alan Dev, blog y portafolio de desarrollo web."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.alandev.site/" />
+        <meta
+            property="og:image"
+            content="https://www.alandev.site/og-image.jpg"
+        />
+
+        <link
+            rel="alternate"
+            hreflang="en"
+            href="https://www.alandev.site/en/"
+        />
+        <link rel="alternate" hreflang="es" href="https://www.alandev.site/" />
+
         <title>{title}</title>
         <ClientRouter />
     </head>
@@ -35,7 +66,9 @@ const { title = "Alan Dev" } = Astro.props;
 <script is:inline>
     function getPreferredTheme() {
         const storedTheme = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+        ).matches;
         return storedTheme === "dark" || (!storedTheme && prefersDark);
     }
 
@@ -46,7 +79,9 @@ const { title = "Alan Dev" } = Astro.props;
 
     applyTheme();
 
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+    window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", applyTheme);
 
     document.addEventListener("astro:after-swap", applyTheme);
 </script>

@@ -5,6 +5,7 @@ import { basic } from "@/config/config.json";
 import heroImage from "/public/assets/cv/profile_image.jpeg";
 
 import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import SectionWrapper from "../shared/SectionWrapper.astro";
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
@@ -14,98 +15,96 @@ const linkedInUrl =
         : "https://www.linkedin.com/in/alan-lb195";
 ---
 
-<section class="py-5 px-4 sm:py-10 lg:py-16">
-    <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
-            <div class="relative flex justify-center">
-                <Image
-                    class="w-full md:max-w-md lg:max-w-md rounded-full"
-                    src={heroImage}
-                    loading="eager"
-                    alt="Astro Resume Theme - Alan"
-                />
-            </div>
-            <div>
-                <p
-                    class="animate-bounce text-lg text-offset text-black dark:text-white"
+<SectionWrapper>
+    <div class="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
+        <div class="relative flex justify-center">
+            <Image
+                class="w-full md:max-w-md lg:max-w-md rounded-full"
+                src={heroImage}
+                loading="eager"
+                alt="Astro Resume Theme - Alan"
+            />
+        </div>
+        <div>
+            <p
+                class="animate-bounce text-lg text-offset text-black dark:text-white"
+            >
+                {t("presentation.profession")}
+            </p>
+
+            <h1
+                class="text-2xl font-bold sm:text-4xl lg:text-5xl mt-3 text-black dark:text-white"
+            >
+                {basic.name}
+            </h1>
+
+            <p class="mt-5 text-base sm:text-xl text-black dark:text-white">
+                {t("presentation.description")}
+            </p>
+
+            <!-- CV & Social link Buttons -->
+            <div
+                class="mt-10 flex flex-row justify-center sm:justify-start sm:space-x-6 space-y-4 sm:space-y-0 gap-2"
+            >
+                <a
+                    href=`${basic?.cv_dir_name}/${lang}/cv.pdf`
+                    title="Download CV"
+                    download
+                    class="inline-flex items-center justify-center w-40 h-10 text-base text-black
+                                   font-semibold transition-all duration-200 rounded
+                                  bg-white focus:bg-secondary cursor-pointer"
+                    role="button"
                 >
-                    {t("presentation.profession")}
-                </p>
+                    <img
+                        id="github-icon"
+                        src={basic.download_icon}
+                        alt="GitHub Icon"
+                        class="w-8 h-8 pr-2"
+                    />
+                    {t("presentation.download_cv")}
+                </a>
 
-                <h1
-                    class="text-2xl font-bold sm:text-4xl lg:text-5xl mt-3 text-black dark:text-white"
+                <a
+                    href="https://github.com/Alanlb195"
+                    title="GitHub"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="w-10 h-10 flex items-center justify-center rounded bg-gray-100 transition"
                 >
-                    {basic.name}
-                </h1>
+                    <img
+                        id="github-icon"
+                        src={basic.github_light_icon}
+                        alt="GitHub Icon"
+                        class="w-6 h-6"
+                    />
+                </a>
 
-                <p class="mt-5 text-base sm:text-xl text-black dark:text-white">
-                    {t("presentation.description")}
-                </p>
-
-                <!-- CV & Social link Buttons -->
-                <div
-                    class="mt-10 flex flex-row justify-center sm:justify-start sm:space-x-6 space-y-4 sm:space-y-0 gap-2"
+                <a
+                    href={linkedInUrl}
+                    title="LinkedIn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="w-10 h-10 flex items-center justify-center rounded bg-white transition"
                 >
-                    <a
-                        href=`${basic?.cv_dir_name}/${lang}/cv.pdf`
-                        title="Download CV"
-                        download
-                        class="inline-flex items-center justify-center w-40 h-10 text-base text-black
-                               font-semibold transition-all duration-200 rounded
-                              bg-white focus:bg-secondary cursor-pointer"
-                        role="button"
-                    >
-                        <img
-                            id="github-icon"
-                            src={basic.download_icon}
-                            alt="GitHub Icon"
-                            class="w-8 h-8 pr-2"
-                        />
-                        {t("presentation.download_cv")}
-                    </a>
+                    <img
+                        src={basic.linkedin_icon}
+                        alt="LinkedIn Icon"
+                        class="w-6 h-6"
+                    />
+                </a>
 
-                    <a
-                        href="https://github.com/Alanlb195"
-                        title="GitHub"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="w-10 h-10 flex items-center justify-center rounded bg-gray-100 transition"
-                    >
-                        <img
-                            id="github-icon"
-                            src={basic.github_light_icon}
-                            alt="GitHub Icon"
-                            class="w-6 h-6"
-                        />
-                    </a>
-
-                    <a
-                        href={linkedInUrl}
-                        title="LinkedIn"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="w-10 h-10 flex items-center justify-center rounded bg-white transition"
-                    >
-                        <img
-                            src={basic.linkedin_icon}
-                            alt="LinkedIn Icon"
-                            class="w-6 h-6"
-                        />
-                    </a>
-
-                    <a
-                        href="mailto:alanlb196@gmail.com"
-                        title="Email"
-                        class="w-10 h-10 flex items-center justify-center rounded bg-white transition"
-                    >
-                        <img
-                            src={basic.gmail_icon}
-                            alt="Email Icon"
-                            class="w-6 h-6"
-                        />
-                    </a>
-                </div><!-- end CV & Social link Buttons -->
-            </div>
+                <a
+                    href="mailto:alanlb196@gmail.com"
+                    title="Email"
+                    class="w-10 h-10 flex items-center justify-center rounded bg-white transition"
+                >
+                    <img
+                        src={basic.gmail_icon}
+                        alt="Email Icon"
+                        class="w-6 h-6"
+                    />
+                </a>
+            </div><!-- end CV & Social link Buttons -->
         </div>
     </div>
-</section>
+</SectionWrapper>
