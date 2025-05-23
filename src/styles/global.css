@@ -102,3 +102,24 @@ body::-webkit-scrollbar-thumb {
 .blog a {
   @apply text-blue-500 dark:hover:text-white;
 }
+
+
+.blog ul {
+  @apply list-disc list-inside my-4 text-black dark:text-white;
+}
+
+.blog ol {
+  @apply list-inside my-4 text-black dark:text-white;
+}
+
+.blog li {
+  @apply mb-2 leading-relaxed;
+}
+
+.blog pre {
+  @apply bg-gray-100 dark:bg-gray-800 rounded-md p-4 my-5 overflow-auto;
+}
+
+.blog code {
+  @apply font-mono text-sm text-gray-800 dark:text-gray-200;
+}

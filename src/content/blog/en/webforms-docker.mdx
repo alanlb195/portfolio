@@ -1,0 +1,217 @@
+---
+title: 'Dockerizing a Legacy Application: ASP.NET WebForms + Crystal Reports'
+date: 2025-05-17
+description: How I migrated a legacy system based on ASP.NET WebForms with Crystal Reports to Docker. The technical challenges, implemented solutions, and lessons learned during the process.
+author: your-name
+image: 'images/webforms-docker.webp'
+tags: [Docker, Legacy Systems, ASP.NET, WebForms, Crystal Reports, DevOps]
+isDraft: false
+---
+
+## Introduction
+
+In the enterprise environment, it’s not uncommon to come across **legacy** applications that, despite being built on outdated technologies, remain critical to business operations and profitability. This was exactly the case that motivated me to write this post: migrating an application based on **ASP.NET WebForms** with **Crystal Reports** integration into a **Dockerized** environment.
+
+My conviction is clear: with the right technology and a bit of ingenuity, no system is beyond being adapted to modern standards.
+
+The first challenge was to identify a Docker image capable of supporting the application. To do so, I consulted the technical team about the current production environment. The answer was straightforward: **Windows Server 2019**.
+
+This made sense, as applications built with **ASP.NET WebForms** inherently require a Windows environment to run correctly. However, using a full Windows Server image within a container wasn’t viable—it would include an unnecessary graphical interface and numerous components that would drastically increase the container size. The solution: Windows Server Core 2019.
+
+After researching the available options, I found an ideal alternative: **Windows Server Core 2019**. This version contains only the core of the operating system, with no GUI, making it significantly lighter and perfectly suited for this use case (with Docker).
+
+For more information about this image, you can visit the following link (if still available): [https://hub.docker.com/r/microsoft/windows-servercore](https://hub.docker.com/r/microsoft/windows-servercore)
+
+## Dockerfile Used
+
+Below is the Dockerfile I used to set up the environment for this legacy application:
+
+```dockerfile
+FROM mcr.microsoft.com/windows/servercore:1809
+
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+RUN Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+
+# Dependencies
+WORKDIR /powershell_scripts
+
+COPY ./powershell_scripts .
+
+
+# IIS and additional features
+RUN .\Install-IIS.ps1 -Verbose
+
+
+# Crystal Report Runtime
+RUN .\Install-CrystalReports.ps1 -Verbose
+
+
+# Remove default iis website
+RUN .\Installation_clean.ps1 -Verbose
+
+# Move the application to wwwroot
+WORKDIR /inetpub/wwwroot
+COPY ./app .
+
+EXPOSE 80
+
+# start IIS service
+CMD ["powershell", "-Command", "Start-Service w3svc; while ($true) { Start-Sleep -Seconds 3600 }"]
+```
+
+## Helper Scripts and IIS Configuration
+
+
+You’ve probably noticed that the project includes several .ps1 files. These are PowerShell scripts, which I organized inside a folder named powershell_scripts. This was intentional: keeping them separate from the main Dockerfile helps maintain better organization and scalability within the project.
+
+IIS and the Logic Behind Container-Based Isolation
+Anyone who has worked with applications in Windows environments knows that Windows Server alone isn’t enough to host web applications. For that, you need to enable a key system feature: Internet Information Services (IIS).
+
+IIS is a powerful tool capable of managing multiple applications through Application Pools, among other features. However, this traditional approach didn’t align with the architecture I aimed to implement.
+
+Why not? Because one of the core principles of using Docker is service isolation. Instead of running multiple applications on a single server using pools, I chose a container-based architecture where each application lives in its own container.
+
+Imagine, for example, that you have three frontend applications. The recommended practice is to run each one in a separate container. And if each frontend has its own backend or database, ideally, each of those should be encapsulated in its own container as well.
+
+This approach not only ensures better isolation and scalability but is also highly efficient in terms of storage. Docker handles images using layers, so containers that share a common base (like the OS or IIS) can reuse those layers, reducing space usage. This contrasts with traditional solutions like separate EC2 instances per application, which tend to be heavier and more costly.
+
+Finally, here’s the PowerShell script that installs IIS along with the necessary modules to run ASP.NET applications—including support for ASP.NET 4.5 and .NET Framework extensions.
+
+
+```ps1
+<#
+.Synopsis
+Install IIS and additional characteristics for ASP.NET
+
+#>
+[CmdletBinding()]
+param ()
+
+
+Write-Verbose "Installing features for IIS..."
+Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole, IIS-WebServer, IIS-ManagementScriptingTools, IIS-ApplicationInit, IIS-NetFxExtensibility45, IIS-ASPNET45 -All
+
+Write-Host "IIS successfully Enabled."
+```
+
+## Installing Crystal Reports
+
+
+One of the main challenges in migrating this legacy application was its dependency on the Crystal Reports Runtime. Without this library, the application simply won’t start, throwing critical errors when attempting to render reports.
+
+To address this, I used a PowerShell script that runs during the container’s build process. Its purpose is simple yet essential: check whether the Crystal Reports installer is already available locally, and if not, automatically download it from SAP’s official repository and install it silently within the image.
+
+An important note: I did not include the installer in the project repository due to its size. GitHub enforces limits on large binary files, and beyond that, it's best practice to avoid committing executables to version control when they can be retrieved from a trusted online source.
+
+Below is the script used:
+
+```ps1
+<#
+.Synopsis
+Download and install Crystal Reports runtime for .NET framework
+
+.Link
+https://origin.softwaredownloads.sap.com/public/file/0020000000195602021
+
+.Link
+https://powershellexplained.com/2016-10-21-powershell-installing-msi-files/
+#>
+
+[CmdletBinding()]
+param ()
+
+# Path where the local file is located
+$localFilePath = "C:\powershell_scripts\install\CR13SP30MSI64_0-10010309.msi"
+
+# Download path in case the file does not exist
+$destinationPath = "$env:USERPROFILE\Downloads\CrystalReportsRuntimeInstaller.msi"
+
+# If the MSI file already exists locally, it will be used; if not, it will be downloaded
+if (Test-Path $localFilePath) {
+    Write-Verbose "Found local installer at $localFilePath"
+    $installerPath = $localFilePath
+} else {
+    # If not available locally, download from the internet
+    $sourceUri = 'https://origin.softwaredownloads.sap.com/public/file/0020000000195602021'
+    
+    Write-Verbose 'Local installer not found. Downloading from the internet...'
+    Invoke-WebRequest -Uri $sourceUri -OutFile $destinationPath
+
+    # Use the downloaded file
+    $installerPath = $destinationPath
+}
+
+# Install MSI file
+Write-Verbose "Installing library from $installerPath..."
+Start-Process msiexec.exe -Wait -NoNewWindow -ArgumentList "/i $installerPath /quiet /qn /norestart /l*v install.log"
+
+# If download the file - it is deleted to save space
+if ($installerPath -eq $destinationPath) {
+    Write-Verbose "Removing downloaded installer..."
+    Remove-Item -Path $destinationPath
+}
+else {
+    Write-Verbose "Removing local installer..."
+    Remove-Item -Path $localFilePath
+}
+```
+
+## Building the Docker Image
+
+Building the image requires two main things:
+
+- Windows 10 Pro (required for Windows containers)
+- Docker Desktop
+
+Once we have our Dockerfile ready along with the installation scripts and the application placed in the correct folder structure, the next step is to build the Docker image. This process will gather all defined resources—scripts, binaries, and application files—and generate an executable image ready for deployment.
+
+Project Structure
+
+```bash
+/webforms-docker
+│
+├── Dockerfile
+├── /app
+│   └── [archivos de la aplicación ASP.NET WebForms]
+├── /powershell_scripts
+│   ├── Install-IIS.ps1
+│   ├── Install-CrystalReports.ps1
+│   └── Installation_clean.ps1
+```
+
+# Container execution
+
+Command to build the image and do the build in a container:
+
+```bash
+docker build -t webforms-app .
+
+docker run -d -p 8080:80 --name webforms_app webforms-app .
+
+```
+
+## Conclusion
+
+Migrating a legacy application based on ASP.NET WebForms with Crystal Reports to a containerized environment is no trivial task. It requires a solid understanding of both the limitations of the original tech stack and the benefits of maintaining and improving it. Additionally, working with Docker—especially with Windows containers—introduces certain challenges that differ from traditional Linux-based containers.
+
+- Even if it seems outdated, an application can still be valuable if it serves a critical business purpose.
+- It's possible to encapsulate complex environments like IIS and Crystal Reports within a container using the right approach.
+- Automating the runtime setup with PowerShell scripts enhances the system’s maintainability and portability.
+- Using containers allows for easy replication of the environment, horizontal scaling, and reduced dependency on the host system.
+
+This type of migration not only modernizes your infrastructure but also enables the integration of legacy systems into more modern DevOps pipelines, with better traceability and control over environments.
+
+If you're facing a similar situation, my advice is simple: don't underestimate what can be containerized. With some research, patience, and iterative testing, even a legacy application can make the leap to a modern architecture—without needing a complete rewrite.
+
+
+# Acknowledgments and Reference Repository
+
+I’d like to give special thanks to the creator of the following repository, whose solution helped me better understand the process of installing Crystal Reports in a Dockerized environment:
+
+Reference repository: [https://github.com/craibuc/docker-crystal-reports](https://github.com/Alanlb195/WebForms-Docker)
+
+Based on that foundation, I developed an adapted and fully functional version for my specific use case, which you can check out here:
+
+My adapted repository: [https://github.com/Alanlb195/WebForms-Docker](https://github.com/Alanlb195/WebForms-Docker)

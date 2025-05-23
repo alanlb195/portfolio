@@ -54,12 +54,12 @@ const { title = "Alan Dev" } = Astro.props;
         <title>{title}</title>
         <ClientRouter />
     </head>
-    <body class="min-h-screen bg-gray-300 dark:bg-gray-900">
-        <main class="container mx-auto px-4">
-            <Navbar />
+    <body class="flex flex-col min-h-screen bg-gray-300 dark:bg-gray-900">
+        <Navbar />
+        <main class="container mx-auto px-4 mt-10 flex-grow">
             <slot />
-            <Footer />
         </main>
+        <Footer />
     </body>
 </html>
 
