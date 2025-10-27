@@ -23,7 +23,6 @@ export const getProjectsPaginated = defineAction({
         return {
             data: data.map((project) => ({
                 ...project,
-                technologies: JSON.parse(project.technologies),
             })),
             meta: {
                 offset,

@@ -1,0 +1,222 @@
+---
+title: 'Arquitectura limpia en Nest JS'
+date: 2025-07-27
+description: 'Una plantilla de una aplicacion nest js que implementa Clean Architecture, un ejemplo practico del poder de clean architecture.'
+author: Alan LB
+image: 'images/clean-architecture-nestjs.webp'
+tags: [NestJS, Clean Architecture, Template Projects, Backend, Nest js, Software Architecture]
+isDraft: false
+---
+# 🧱 Introducción
+
+¡Hola, devs! 👋  
+Hoy no vengo a contarte la historia épica de Clean Architecture ni a repetir lo que ya se ha dicho mil veces.  
+Mi objetivo es **ser directo y crítico**, mostrarte **cuándo realmente vale la pena aplicarla** y compartirte **una plantilla práctica con NestJS** para que no te pierdas en el intento 🚀.
+
+# 🧩 Qué es Clean Architecture
+
+En pocas palabras, **Clean Architecture** es un enfoque de diseño de software que busca **separar responsabilidades** y mantener la **independencia** de frameworks, bases de datos o interfaces de usuario.
+
+👉 En otras palabras, si mañana necesitas cambiar la base de datos, una dependencia o incluso el framework completo, **no deberías tener que reescribir medio proyecto**.  
+Ese nivel de flexibilidad y mantenibilidad es justo lo que esta arquitectura persigue 🧠.
+
+# ⚖️ Pros y contras de implementar Clean Architecture
+
+Como en casi todo en la vida, **nada es perfecto**.  
+Si no estás dispuesto a asumir ciertos compromisos, quizás Clean Architecture **no sea la mejor opción** para tu proyecto. Todo depende del **contexto** y de los **objetivos**.
+
+💡 *Imagina esto:*  
+Quieres comprar un celular.  
+- Si solo lo usas para WhatsApp, llamadas y mensajes, un modelo económico te basta.  
+- Pero si eres desarrollador de videojuegos y necesitas potencia, herramientas y rendimiento… ese mismo teléfono se queda corto.  
+
+Con Clean Architecture pasa lo mismo: **depende del tipo de proyecto** y de lo que esperas de él.
+
+En un proyecto típico con **NestJS**, solemos trabajar con una estructura modular (similar a Angular, aunque no idéntica).  
+Cada módulo representa una funcionalidad —por ejemplo, `Users`, `Posts`, etc.— y puede ser reutilizado en otros mediante **inyección de dependencias**. Esa es la filosofía NestJS.
+
+🧠 Pero Clean Architecture va un paso más allá: busca que tu aplicación **no dependa del framework**, sino que el framework **dependa de tu aplicación**.  
+Esto se logra separando las responsabilidades en capas bien definidas que hacen tu código más **flexible, escalable y fácil de mantener** a largo plazo.
+
+# 🏗️ Capas de Clean Architecture
+
+Los nombres pueden variar según el proyecto, pero el principio base es el mismo:  
+**separar responsabilidades y mantener el dominio completamente independiente de los detalles técnicos.**
+
+Una forma práctica de estructurarlo en **NestJS** es la siguiente:
+
+---
+
+### 🧠 Domain (o Core)
+
+Aquí vive **el corazón del negocio**, totalmente libre de frameworks o librerías externas.
+
+Incluye:
+- Entidades que representan los conceptos principales del dominio.  
+- Reglas de negocio y validaciones puras.  
+
+💡 **Objetivo:** Que esta capa pueda funcionar sin importar si usas NestJS, Express o cualquier otro framework.
+
+---
+
+### ⚙️ Application (o Use Cases)
+
+Define **qué hace tu sistema** y **cómo interactúan las partes internas** del dominio con el exterior.
+
+Contiene:
+- Casos de uso que orquestan la lógica de negocio.  
+- Interfaces o puertos que la infraestructura deberá implementar (como repositorios).  
+
+💡 **Objetivo:** Contener la lógica de aplicación sin depender de implementaciones concretas de base de datos o transporte HTTP.
+
+---
+
+### 🧩 Infrastructure
+
+Aquí entran todas las **implementaciones técnicas concretas**.
+
+Incluye:
+- Adaptadores de persistencia (repositorios que implementan los puertos del dominio).  
+- Integraciones con APIs externas, ORM, servicios de mensajería, etc.  
+- Configuración específica de NestJS.  
+
+💡 **Objetivo:** Si mañana decides cambiar de ORM (por ejemplo, de TypeORM a Prisma), solo deberías tocar esta capa 😎.
+
+---
+
+### 🌐 Presentation (o Interface Adapters)
+
+Es la **puerta de entrada** del mundo exterior a tu aplicación.
+
+Incluye:
+- Controladores o resolvers (REST, GraphQL, gRPC…).  
+- DTOs y validaciones de entrada/salida.  
+
+💡 **Objetivo:** Exponer tu lógica de aplicación sin que las reglas de negocio conozcan los detalles técnicos de cómo llegan los datos.
+
+---
+
+# 🚀 Showcase: Arquitectura Limpia con NestJS
+
+Basta de teoría, ¡vamos a la práctica! 💪  
+Porque —seamos sinceros— en el desarrollo, **la mejor forma de aprender es haciendo**.  
+Así que construyamos juntos un pequeño proyecto en **NestJS** que ponga a prueba los principios de **Clean Architecture** y veamos cómo se traduce todo esto en código real.
+
+## 🧰 Tecnologías utilizadas
+
+En este showcase usaremos un stack sencillo pero sólido:
+
+- 🟦 **TypeScript** → Para mantener un tipado fuerte en todas las capas (especialmente en el dominio).  
+- ⚙️ **NestJS** → Como framework principal para estructurar la capa de presentación.  
+- 🧠 **Prisma ORM** → Para comunicarnos con la base de datos de manera elegante y tipada.  
+- 🐘 **PostgreSQL** (en un contenedor Docker) → Nuestra base de datos relacional para persistir la información.  
+
+La aplicación será una **demo sencilla**, con algunos endpoints que permiten **consultar información de usuarios**, pero el objetivo no es la funcionalidad, sino **entender la arquitectura y su propósito** 🧩.
+
+---
+
+## 🗂️ Mapeo de la Arquitectura a Nuestro Proyecto
+
+Nuestra estructura de carpetas refleja las **capas de Clean Architecture**, siguiendo la famosa **Regla de la Dependencia** (las capas externas dependen de las internas, ¡nunca al revés! 🔄).
+
+```bash
+/src
+├── core/            # 🧠 Círculo Interno: Entidades y Reglas de Negocio
+├── application/     # ⚙️ Círculo Medio: Casos de Uso y Lógica de Aplicación
+├── infrastructure/  # 🧩 Círculo Externo: Implementaciones y Detalles Técnicos
+└── presentation/    # 🌐 Círculo Externo: Entrada/Salida (Controllers)
+```
+Cada carpeta representa una capa del sistema, y cada capa tiene un propósito claro.
+Veamos cómo se traduce esto en la práctica 👇
+
+2.1. Capa core (El Corazón de la Aplicación)
+
+Esta es la capa más interna y la más importante. Contiene la lógica de negocio pura y no depende de ninguna otra capa.
+
+- `core/entities`: Representan los objetos de negocio fundamentales. Son clases simples que encapsulan datos y lógica de negocio que es válida en toda la
+    empresa.
+    - Ejemplo: user.entity.ts, post.entity.ts. Un User siempre tendrá un nombre y un email, sin importar la tecnología que usemos.
+
+- `core/repositories`: Definen interfaces (contratos) que dictan cómo se debe comunicar la aplicación con la capa de datos. No contienen código de
+    implementación.
+    - Ejemplo: user.repository.interface.ts. Define métodos como findById, save, delete, pero no dice cómo se implementan. Esto nos permite cambiar de
+        Prisma a TypeORM sin tocar el core o la application.
+
+- `core/value-objects`: Pequeños objetos que representan un valor simple, como Email o Name. Encapsulan lógica de validación y garantizan que los datos
+    dentro de una entidad sean siempre válidos.
+    - Ejemplo: email.vo.ts se asegura de que un string tenga el formato de un email válido.
+
+- `core/exceptions`: Excepciones personalizadas del dominio para manejar errores de negocio de forma explícita.
+    - Ejemplo: domain-exceptions.ts podría contener un UserNotFoundException.
+
+2.2. Capa application (Los Casos de Uso)
+
+Esta capa orquesta el flujo de datos entre las entidades (core) y las capas externas. Contiene la lógica específica de la aplicación (los "casos de uso").
+Depende del core, pero no de infrastructure o presentation.
+
+- `application/commands`: Representan acciones que modifican el estado del sistema (Crear, Actualizar, Eliminar). Siguen el patrón CQRS (Command Query
+    Responsibility Segregation).
+    - Ejemplo: create-user.command.ts orquesta la creación de un usuario. Recibe los datos, los valida y utiliza la interfaz del repositorio
+        (UserRepositoryInterface) para persistir la entidad.
+
+- `application/queries`: Representan acciones que leen el estado del sistema sin modificarlo.
+    - Ejemplo: get-user.query.ts se encarga de obtener los datos de un usuario.
+
+- `application/dtos`: (Data Transfer Objects) Son objetos simples que transportan datos entre capas, especialmente entre presentation y application. No
+    tienen lógica de negocio.
+    - Ejemplo: create-user.dto.ts define la estructura de datos que el controlador envía al caso de uso para crear un usuario.
+
+- `application/mappers`: Convierten entidades del core a DTOs de respuesta, o viceversa.
+    - Ejemplo: user.mapper.ts puede convertir un User (entidad) a un UserResponse (DTO) para evitar exponer la lógica interna de la entidad a los clientes
+        de la API.
+
+2.3. Capa infrastructure (Las Implementaciones)
+
+Esta es una capa externa. Contiene todas las implementaciones concretas de las interfaces definidas en el core. Es el mundo de las herramientas, frameworks
+y tecnologías específicas.
+
+- `infrastructure/repositories`: Aquí es donde las interfaces del core cobran vida.
+    - Ejemplo: user.repository.ts implementa UserRepositoryInterface usando Prisma. Si mañana decidimos usar MongoDB, solo tendríamos que crear un
+        user.repository.mongodb.ts que implemente la misma interfaz, y el resto de la aplicación seguiría funcionando sin cambios.
+
+- `infrastructure/database`: Configuración y servicios relacionados con la base de datos.
+    - Ejemplo: prisma.service.ts gestiona la conexión y el cliente de Prisma.
+
+- `infrastructure/logger`, `infrastructure/config`: Implementaciones concretas para servicios como logging, configuración, etc.
+
+2.4. Capa presentation (La Puerta de Entrada)
+
+Es la capa más externa, responsable de interactuar con el "mundo exterior". En nuestro caso, es la API REST.
+
+- `presentation/modules`: Módulos de NestJS que agrupan controladores y proveedores.
+- `presentation/modules/user/user.controller.ts`: El controlador es el punto de entrada de las solicitudes HTTP. Su única responsabilidad es:
+    1. Recibir la solicitud.
+    2. Extraer y validar los datos de entrada (usando DTOs).
+    3. Llamar al caso de uso correspondiente en la capa application (un Command o un Query).
+    4. Devolver la respuesta al cliente.
+    Importante: El controlador no contiene lógica de negocio. Es una capa muy delgada.
+
+3. Flujo de una Solicitud: Creando un Usuario
+
+Para consolidar el conocimiento, veamos el flujo completo de una solicitud POST /users:
+
+1. Presentation: La solicitud llega al user.controller.ts. El @Body() de NestJS valida que los datos coincidan con CreateUserDto.
+2. Controller -> Application: El controlador invoca el CreateUserCommand de la capa application, pasándole el DTO.
+3. Application: El manejador del comando:
+    a. Recibe el CreateUserDto.
+    b. Puede usar Value Objects (core) para validar y crear los componentes de la entidad (Name, Email).
+    c. Crea una instancia de User (core/entities).
+    d. Llama al método save() del UserRepositoryInterface (core/repositories).
+4. Dependency Injection (Magia de NestJS): NestJS, gracias a la inyección de dependencias, sabe que debe proporcionar la implementación concreta
+    (infrastructure/repositories/user.repository.ts) cuando se solicita la interfaz.
+5. Infrastructure: El user.repository.ts recibe la entidad User y utiliza el cliente de Prisma para escribir los datos en la base de datos.
+6. Retorno: La respuesta viaja de vuelta por las mismas capas. El repositorio puede devolver la entidad creada, el caso de uso la mapea a un DTO de respuesta
+    y el controlador la envía como respuesta HTTP 201.
+
+# Conclusión
+
+Esta arquitectura nos brinda enormes beneficios:
+
+- Testabilidad: Podemos probar la lógica de negocio (core y application) sin levantar una base de datos ni un servidor web.
+- Independencia: El corazón de nuestra aplicación no sabe nada sobre NestJS o Prisma. Podemos actualizarlos o cambiarlos con un impacto mínimo.
+- Mantenibilidad: Las responsabilidades están claramente definidas, lo que hace que el código sea más fácil de entender, depurar y extender.

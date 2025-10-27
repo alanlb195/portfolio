@@ -1,47 +1,38 @@
-# Astro Starter Kit: Minimal
+## ⚠️ Importante: Enlaces internos con ScrollSmoother
 
-```sh
-npm create astro@latest -- --template minimal
+Este proyecto usa **GSAP ScrollSmoother** para manejar el desplazamiento suave (`smooth scroll`) en todo el layout principal (`MainLayoutScrollAnimation`).
+
+### 🚫 Problema con `href="#section"`
+
+Los enlaces que usan el comportamiento nativo del navegador con `href="#id"` **rompen el ScrollSmoother** y pueden causar:
+- saltos bruscos en el scroll,
+- pérdida del efecto de suavizado,
+- desincronización entre `ScrollTrigger` y las animaciones GSAP.
+
+Esto ocurre porque el navegador intenta hacer scroll nativo **al mismo tiempo** que GSAP controla el desplazamiento del contenido dentro de su wrapper.
+
+---
+
+### ✅ Solución: usar `data-scroll`
+
+Para mantener la compatibilidad con el sistema de smooth scroll global, **todos los enlaces internos deben usar `data-scroll`** en lugar de `href`.
+
+#### Ejemplo correcto:
+```astro
+<a data-scroll="#contact">Contact</a>
 ```
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+#### Ejemplo incorrecto:
+```astro
+<a href="#contact">Contact</a> <!-- ❌ rompe el ScrollSmoother -->
 ```
+El sistema global (MainLayoutScrollAnimation o ScrollManager) intercepta todos los elementos con data-scroll y se encarga de:
+- prevenir el comportamiento nativo del navegador,
+- calcular la posición correcta considerando el alto del navbar,
+- ejecutar el desplazamiento suave usando smoother.scrollTo().
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+#### 🧠 Nota adicional
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Si se están renderizando elementos dinámicos (por ejemplo, enlaces generados desde Markdown o contenido CMS),
+estos deben reemplazar los href="#..." por data-scroll="#..." manualmente o mediante un componente wrapper.
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+De lo contrario, el comportamiento del scroll puede romper el layout o congelar las animaciones.

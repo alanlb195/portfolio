@@ -1,112 +1,108 @@
 ---
 import { Image } from "astro:assets";
-
-import { basic } from "@/config/config.json";
-import heroImage from "/public/assets/cv/profile_image.jpeg";
-
+import profile_image from "/public/assets/cv/profile_image.jpeg";
 import { getLangFromUrl, useTranslations } from "@/i18n/utils";
-import SectionWrapper from "../shared/SectionWrapper.astro";
+
+import Button from "../shared/ui/Button.astro";
+import PresentationAnimations from "./animations/PresentationAnimations";
+import { FaArrowDown } from "react-icons/fa";
+
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-
-const linkedInUrl =
-    lang === "en"
-        ? "https://www.linkedin.com/in/alan-lb195?locale=en_US"
-        : "https://www.linkedin.com/in/alan-lb195";
 ---
 
-<SectionWrapper>
-    <div class="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
-        <div class="relative flex justify-center">
-            <Image
-                width={500}
-                height={500}
-                class="w-full md:max-w-md lg:max-w-md rounded-full"
-                src={heroImage}
-                loading="eager"
-                alt="Astro Resume Theme - Alan"
-            />
+<section
+    class="presentation-text-section relative flex flex-col justify-center items-center text-center overflow-hidden
+    min-h-[calc(100vh-4rem)] w-screen left-[calc(-50vw+50%)]"
+>
+    <!--* SVG - Waves -->
+    <div class="absolute inset-0 -z-10">
+        <!-- Waves -->
+        <svg
+            class="absolute inset-0 w-full h-full -z-10"
+            viewBox="0 0 800 600"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid slice"
+        >
+            <defs>
+                <linearGradient id="gradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#5eead4">
+                        <animate
+                            attributeName="stop-color"
+                            values="#5eead4; #2dd4bf; #22d3ee; #5eead4"
+                            dur="8s"
+                            repeatCount="indefinite"></animate>
+                    </stop>
+                    <stop offset="100%" stop-color="#06b6d4">
+                        <animate
+                            attributeName="stop-color"
+                            values="#06b6d4; #0ea5e9; #2dd4bf; #06b6d4"
+                            dur="8s"
+                            repeatCount="indefinite"></animate>
+                    </stop>
+                </linearGradient>
+            </defs>
+
+            <path fill="url(#gradient)" fill-opacity="0.4">
+                <animate
+                    attributeName="d"
+                    dur="10s"
+                    repeatCount="indefinite"
+                    values="
+        M0,300 Q150,200 400,300 T800,300 V600 H0 Z;
+        M0,300 Q150,400 400,300 T800,300 V600 H0 Z;
+        M0,300 Q150,200 400,300 T800,300 V600 H0 Z
+        "
+                ></animate>
+            </path>
+        </svg>
+    </div>
+
+    <!--* Content -->
+    <div class="max-w-4xl mx-auto flex flex-col items-center space-y-8">
+        <!-- Imagen -->
+        <div class="relative presentation-image">
+            <div
+                class="w-36 h-36 sm:w-40 sm:h-40 md:w-48 md:h-48 overflow-hidden rounded-full border-4
+               border-slate-300/60 dark:border-gray-700/60 shadow-lg"
+            >
+                <Image
+                    src={profile_image}
+                    alt="Profile"
+                    width={500}
+                    height={500}
+                    loading="eager"
+                    class="h-full w-full object-cover"
+                />
+            </div>
         </div>
-        <div>
+
+        <!-- Texto -->
+        <div class="space-y-4">
             <p
-                class="animate-bounce text-lg text-offset text-black dark:text-white"
+                class="font-saira text-sm uppercase tracking-[0.2em] text-slate-600 dark:text-gray-400 font-medium"
             >
                 {t("presentation.profession")}
             </p>
 
             <h1
-                class="text-2xl font-bold sm:text-4xl lg:text-5xl mt-3 text-black dark:text-white"
+                class="font-saira presentation-text-block text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-slate-900 dark:text-white"
             >
-                {basic.name}
+                {t("presentation.name")}
             </h1>
 
-            <p class="mt-5 text-base sm:text-xl text-black dark:text-white">
-                {t("presentation.description")}
-            </p>
-
-            <!-- CV & Social link Buttons -->
-            <div
-                class="mt-10 flex flex-row justify-center sm:justify-start sm:space-x-6 space-y-4 sm:space-y-0 gap-2"
+            <p
+                class="font-saira max-w-2xl mx-auto text-base sm:text-lg text-slate-700 dark:text-gray-300 leading-relaxed"
             >
-                <a
-                    href=`${basic?.cv_dir_name}/${lang}/cv.pdf`
-                    title="Download CV"
-                    download
-                    class="inline-flex items-center justify-center w-40 h-10 text-base text-black
-                                   font-semibold transition-all duration-200 rounded
-                                  bg-white focus:bg-secondary cursor-pointer"
-                    role="button"
-                >
-                    <img
-                        id="github-icon"
-                        src={basic.download_icon}
-                        alt="GitHub Icon"
-                        class="w-8 h-8 pr-2"
-                    />
-                    {t("presentation.download_cv")}
-                </a>
+                {t("presentation.additional-text")}
+            </p>
+        </div>
 
-                <a
-                    href="https://github.com/Alanlb195"
-                    title="GitHub"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="w-10 h-10 flex items-center justify-center rounded bg-gray-100 transition"
-                >
-                    <img
-                        id="github-icon"
-                        src={basic.github_light_icon}
-                        alt="GitHub Icon"
-                        class="w-6 h-6"
-                    />
-                </a>
-
-                <a
-                    href={linkedInUrl}
-                    title="LinkedIn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="w-10 h-10 flex items-center justify-center rounded bg-white transition"
-                >
-                    <img
-                        src={basic.linkedin_icon}
-                        alt="LinkedIn Icon"
-                        class="w-6 h-6"
-                    />
-                </a>
-
-                <a
-                    href="mailto:alanlb196@gmail.com"
-                    title="Email"
-                    class="w-10 h-10 flex items-center justify-center rounded bg-white transition"
-                >
-                    <img
-                        src={basic.gmail_icon}
-                        alt="Email Icon"
-                        class="w-6 h-6"
-                    />
-                </a>
-            </div><!-- end CV & Social link Buttons -->
+        <!-- CTA -->
+        <div class="flex flex-wrap justify-center gap-4 pt-4">
+            <Button icon={FaArrowDown} dataScroll="#technologies" variant="outline" />
         </div>
     </div>
-</SectionWrapper>
+</section>
+
+<PresentationAnimations client:only="react" />

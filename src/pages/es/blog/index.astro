@@ -1,19 +1,22 @@
 ---
-import MainLayout from "@/layouts/MainLayout.astro";
-
 import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 import BlogCard from "@/components/blog/BlogCard.astro";
 import { getCollection } from "astro:content";
+import MainLayout from "@/layouts/MainLayout.astro";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const blogPosts = (await getCollection("blog", ({id}) => id.startsWith(`${lang}/`)))
-  .sort((a, b) => a.id.localeCompare(b.id));
+const blogPosts = (
+    await getCollection("blog", ({ id }) => id.startsWith(`${lang}/`))
+).sort((a, b) => a.id.localeCompare(b.id));
 ---
 
-<MainLayout>
-    <section>
+<MainLayout
+    title="Alan's Blog"
+    description="My Personal Blog Content"
+>
+    <section class="min-h-[calc(100vh-8rem)]">
         <div class="container px-6 py-10 mx-auto">
             <div class="text-center">
                 <h1
@@ -23,7 +26,9 @@ const blogPosts = (await getCollection("blog", ({id}) => id.startsWith(`${lang}/
                 </h1>
             </div>
 
-            <div class="grid grid-cols-1 gap-8 mt-8 lg:grid-cols-3">
+            <div
+                class="grid grid-cols-1 gap-8 mt-8 lg:grid-cols-3 md:grid-cols-2"
+            >
                 {blogPosts.map((post) => <BlogCard post={post} />)}
             </div>
         </div>

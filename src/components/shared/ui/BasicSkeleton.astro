@@ -1,0 +1,14 @@
+---
+const {
+    width = "w-full",
+    height = "h-4",
+    rounded = "rounded-lg",
+    class: extra = "",
+} = Astro.props;
+---
+
+<div
+    aria-hidden="true"
+    class={`bg-gray-300/70 dark:bg-gray-700/60 animate-pulse ${width} ${height} ${rounded} ${extra}`}
+>
+</div>

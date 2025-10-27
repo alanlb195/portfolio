@@ -16,14 +16,14 @@ const postUrl = `/${post.slug.replace(/^([a-z]{2})\//, "$1/blog/")}`;
 ---
 
 <div
-    class="group rounded-2xl overflow-hidden bg-white dark:bg-zinc-900 shadow-sm hover:shadow-lg transition-shadow duration-300 border border-zinc-200 dark:border-zinc-800"
+    class="group overflow-hidden bg-white dark:bg-zinc-900 shadow-sm hover:shadow-lg transition-shadow duration-300 border border-zinc-200 dark:border-zinc-800 rounded-2xl"
 >
     <a href={postUrl}>
         <Image
             width={1200}
             height={675}
             transition:name={`${frontmatter.image}-image`}
-            class="w-full aspect-video object-cover transition-transform duration-300"
+            class="w-full aspect-video object-cover transition-transform duration-300 rounded-t-2xl"
             src={`/blog/${frontmatter.image}`}
             alt={frontmatter.title}
         />

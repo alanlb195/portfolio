@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
-import { LuSun } from "react-icons/lu";
-import { LuMoon } from "react-icons/lu";
-
+import { LuSun, LuMoon } from "react-icons/lu";
 
 export default function ThemeToggle() {
-
     const [isDark, setIsDark] = useState<boolean | null>(null);
 
     useEffect(() => {
@@ -30,19 +27,17 @@ export default function ThemeToggle() {
         html.classList.toggle("dark");
         localStorage.setItem("theme", nowDark ? "dark" : "light");
         setIsDark(nowDark);
-    }
+    };
 
     if (isDark === null) return null;
 
     return (
         <button
-            className="w-[54px] h-[47px] flex items-center justify-center border text-sm font-medium text-gray-800 dark:text-gray-200
-                    transition-colors duration-200 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700
-                  hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
             onClick={toggleTheme}
+            className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md hover:scale-105 transition cursor-pointer"
+            title="Toggle Theme"
         >
-            {isDark ? <LuSun className="w-5 h-5" /> : <LuMoon className="w-5 h-5" />}
+            {isDark ? <LuSun className="w-5 h-5 text-yellow-500" /> : <LuMoon className="w-5 h-5 text-blue-400" />}
         </button>
-
     );
 }

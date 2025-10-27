@@ -1,0 +1,40 @@
+---
+import { actions } from "astro:actions";
+import CertificateCard, { type Certificate } from "./CertificateCard.astro";
+import CertificatesScrollAnimation from "./animations/CertificateScrollAnimation";
+
+interface Props {
+  lang: "en" | "es";
+}
+
+const { lang } = Astro.props as Props;
+
+const { data, error } = await Astro.callAction(actions.getCertificatesPaginated, {
+  limit: 50,
+  offset: 0,
+});
+
+const certificates = data?.data as Certificate[];
+---
+
+<div class="space-y-6">
+  {error && (
+    <p class="text-red-500 font-semibold">
+      Error al cargar certificados
+    </p>
+  )}
+
+  {!error && certificates.length === 0 && (
+    <p class="text-gray-500">No hay certificados disponibles.</p>
+  )}
+
+  {!error && certificates.length > 0 && (
+    <div class="space-y-6">
+      {certificates.map((cert) => (
+        <CertificateCard cert={cert} lang={lang} />
+        <CertificatesScrollAnimation client:only="react" />
+      ))}
+    </div>
+  )}
+</div>
+
