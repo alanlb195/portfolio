@@ -11,15 +11,19 @@ export interface ImageModalProps {
 
 const ImageModal: React.FC<ImageModalProps> = ({ images, open, onClose }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-
     // Controla si el modal sigue visible aunque open sea false
     const [isVisible, setIsVisible] = useState(open);
+    const [isLoaded, setIsLoaded] = useState(false); // flag - image loaded?
 
     const modalRef = useRef<HTMLDivElement>(null);
 
     // Maneja cuándo desmontar después de animar salida
     useEffect(() => {
-        if (open) setIsVisible(true);
+        if (open) {
+            setIsVisible(true);
+            setIsLoaded(false); // reset cuando se abre
+        }
+
     }, [open]);
 
     const handleCloseAnimationEnd = () => {
@@ -30,6 +34,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ images, open, onClose }) => {
     useModalAnimation({
         modalRef,
         isOpen: open,
+        ready: isLoaded,
         onCloseAnimationEnd: handleCloseAnimationEnd,
     });
 
@@ -79,6 +84,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ images, open, onClose }) => {
                     src={images[currentIndex]}
                     alt={`Imagen ${currentIndex + 1}`}
                     className="rounded-xl max-h-[75vh] object-contain mb-6"
+                    onLoad={() => setIsLoaded(true)}
                 />
 
                 {/* Miniaturas */}
@@ -87,7 +93,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ images, open, onClose }) => {
                         <button
                             key={idx}
                             onClick={() => setCurrentIndex(idx)}
-                            className={`border-2 rounded-md transition-all duration-150 flex-shrink-0 ${idx === currentIndex
+                            className={`cursor-pointer border-2 rounded-md transition-all duration-150 flex-shrink-0 ${idx === currentIndex
                                 ? "border-indigo-500 scale-105"
                                 : "border-transparent hover:border-zinc-400"
                                 }`}
