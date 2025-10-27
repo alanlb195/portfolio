@@ -1,14 +1,13 @@
 ---
 import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 import { actions } from "astro:actions";
-
-import ProjectCard from "./ProjectCard.astro";
+import ProjectsAnimation from "./animations/ProjectsAnimation";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const { data, error } = await Astro.callAction(actions.getProjectsPaginated, {
-    limit: 5,
+    limit: 50,
     offset: 0,
 });
 
@@ -19,22 +18,60 @@ if (error) {
 const projects = data?.data ?? [];
 ---
 
-<section class="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-    <div class="text-gray-900 dark:text-white mb-6">
-        <p class="text-dark dark:text-white text-2xl font-bold mb-10">{t("projects.title")}</p>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {
-                projects.map((project) => (
-                    <ProjectCard
-                        title={project.title_en}
-                        description={project.description_en}
-                        technologies={project.technologies}
-                        repositoryUrl={project.repositoryUrl}
-                        projectUrl={project.projectUrl}
-                    />
-                ))
-            }
+<!-- altura ajustada para ajustarla al alto mas el navbar que es fixed -->
+<section id="projects" class="projects-section min-h-[calc(100vh-4rem)]">
+    <div class="text-gray-900 dark:text-white">
+        <!-- titulo de la seccion Projects -->
+        <p
+            class="font-saira text-dark dark:text-white text-2xl font-bold text-center pt-10"
+        >
+            {t("projects.title")}
+        </p>
+        <!-- Showcase horizontal scroll -->
+        <div class="projects-wrapper overflow-hidden w-full mt-10">
+            <div class="projects-track flex">
+                {
+                    projects.map((project) => (
+                        <div class="flex-shrink-0 w-full flex flex-col items-center justify-center space-y-4 px-4">
+                            {project.mediaType === "video" ? (
+                                <video
+                                    src={project.mediaUrl}
+                                    autoplay
+                                    loop
+                                    muted
+                                    playsinline
+                                    class="w-full h-[70vh] object-cover"
+                                />
+                            ) : (
+                                <img
+                                    src={project.mediaUrl}
+                                    alt={project[`title_${lang}`]}
+                                    class="w-full h-[70vh] object-cover"
+                                />
+                            )}
+                            {project.projectUrl ? (
+                                <a
+                                    href={project.projectUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="project-title font-saira text-xl md:text-2xl font-semibold hover:underline"
+                                >
+                                    {lang === "es"
+                                        ? project.title_es
+                                        : project.title_en}
+                                </a>
+                            ) : (
+                                <p class="project-title font-saira text-xl md:text-2xl font-semibold">
+                                    {lang === "es"
+                                        ? project.title_es
+                                        : project.title_en}
+                                </p>
+                            )}
+                        </div>
+                    ))
+                }
+            </div>
         </div>
+        <ProjectsAnimation client:only="react" />
     </div>
 </section>

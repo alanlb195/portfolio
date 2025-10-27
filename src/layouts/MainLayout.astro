@@ -3,6 +3,7 @@ import "@/styles/global.css";
 
 import Navbar from "@/components/shared/Navbar.astro";
 import Footer from "@/components/shared/Footer.astro";
+import MainLayoutScrollAnimation from "./MainLayoutScrollAnimation";
 
 import { getLangFromUrl } from "../i18n/utils";
 const lang = getLangFromUrl(Astro.url);
@@ -11,56 +12,71 @@ import { ClientRouter } from "astro:transitions";
 
 interface Props {
     title?: string;
+    description?: string;
+    image?: string;
+    url?: string;
+    keywords?: string[];
 }
 
-const { title = "Alan Dev" } = Astro.props;
+const {
+    title = "Alan Dev",
+    description = "Alan's Blog",
+    image = "https://www.alandev.site/og-image.jpg",
+    url = "https://www.alandev.site/",
+    keywords = ["blog", "Astro", "programación"],
+} = Astro.props;
 ---
 
 <html lang={lang}>
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.png " />
+        <link rel="icon" type="image/svg+xml" href="/favicon.ico " />
         <link rel="sitemap" href="/sitemap-index.xml" />
-        <meta
-            name="description"
-            content="Alan Dev – Desarrollador web, blog de tecnología y proyectos personales."
-        />
+        <meta name="description" content={description} />
         <meta name="robots" content="index, follow" />
-        <meta name="author" content="Alan Dev" />
-        <meta
-            name="keywords"
-            content="desarrollador web, frontend, blog de programación, Astro, JavaScript, México"
-        />
+        <meta name="author" content="Alan LB" />
+        <meta name="keywords" content={keywords.join(", ")} />
         <meta property="og:title" content={title} />
-        <meta
-            property="og:description"
-            content="Bienvenido al sitio de Alan Dev, blog y portafolio de desarrollo web."
-        />
+        <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://www.alandev.site/" />
-        <meta
-            property="og:image"
-            content="https://www.alandev.site/og-image.jpg"
-        />
-
+        <meta property="og:url" content={url} />
+        <meta property="og:image" content={image} />
         <link
             rel="alternate"
             hreflang="en"
             href="https://www.alandev.site/en/"
         />
-        <link rel="alternate" hreflang="es" href="https://www.alandev.site/" />
-
+        <link
+            rel="alternate"
+            hreflang="es"
+            href="https://www.alandev.site/es/"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,400;0,700;1,400&display=swap"
+            rel="stylesheet"
+        />
         <title>{title}</title>
         <ClientRouter />
     </head>
-    <body class="flex flex-col min-h-screen bg-gray-300 dark:bg-gray-900">
+    <body
+        class="flex flex-col min-h-screen bg-stone-300/80 dark:bg-slate-950 text-white"
+    >
         <Navbar />
-        <main class="container mx-auto px-4 mt-10 flex-grow">
-            <slot />
-        </main>
-        <Footer />
-    </body>
+        <div id="smooth-wrapper">
+            <div id="smooth-content">
+                <!--- ALL YOUR CONTENT HERE --->
+                <main class="container mx-auto flex-grow pt-16">
+                    <slot />
+                </main>
+                <Footer />
+                <!-- Footer is not a fixed element! -->
+            </div>
+        </div>
+        <!-- position: fixed elements can go outside (navbar etc.)--->
+    </body><MainLayoutScrollAnimation client:only="react" />
 </html>
 
 <script is:inline>

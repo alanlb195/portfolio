@@ -1,0 +1,68 @@
+---
+import { LuAward } from "react-icons/lu";
+
+export interface Certificate {
+    id: number;
+    provider: string;
+    date: string | Date;
+    duration: string;
+    technologies: string[];
+    certificateUrl: string;
+    title_en: string;
+    description_en: string;
+    title_es: string;
+    description_es: string;
+}
+
+interface Props {
+    cert: Certificate;
+    lang: "en" | "es";
+}
+
+const { cert, lang } = Astro.props;
+---
+
+<div
+    class="certificate-card opacity-0 translate-y-8 transition-none flex flex-col sm:flex-row justify-between gap-4 bg-white dark:bg-zinc-900 shadow rounded-2xl p-5 w-full border dark:border-zinc-300 border-zinc-800 hover:shadow-lg"
+>
+    <!-- Contenido principal -->
+    <div class="flex-1 space-y-3">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+            {cert[`title_${lang}`]}
+        </h3>
+
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+            <span class="font-semibold">{cert.provider}</span> ·{" "}
+            {new Date(cert.date).toLocaleDateString(lang)} ·{" "}
+            <span class="italic">{cert.duration}</span>
+        </p>
+
+        <div class="flex flex-wrap gap-2">
+            {
+                cert.technologies.map((tech) => (
+                    <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs px-2 py-1 rounded-full">
+                        {tech}
+                    </span>
+                ))
+            }
+        </div>
+
+        <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            {cert[`description_${lang}`]}
+        </p>
+    </div>
+
+    <!-- Icono / Enlace -->
+    <div class="flex flex-col items-end justify-between">
+        <a
+            href={cert.certificateUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-4 transition-colors rounded-lg"
+        >
+            <LuAward
+                className="w-10 h-10 text-yellow-400 dark:text-yellow-400 hover:opacity-80"
+            />
+        </a>
+    </div>
+</div>

@@ -10,12 +10,18 @@
   "compilerOptions": {
     "strictNullChecks": true,
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": [
-        "src/*"
+        "src/*",
+        "src/components/*"
       ]
     },
-    "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "jsx": "preserve",
+    "jsxImportSource": "react",
+    "moduleResolution": "bundler",
+    "types": [
+      "astro/client"
+    ]
   }
 }

@@ -1,0 +1,78 @@
+---
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+import { LuDownload, LuEye, LuGithub, LuMail } from "react-icons/lu";
+import { BsLinkedin } from "react-icons/bs";
+import { FaWhatsapp } from "react-icons/fa";
+
+import Button from "../shared/ui/Button.astro";
+import ImagePreviewer from "../shared/ui/ImagePreviewer.tsx";
+
+import { contact } from "@/config/config.json";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const linkedInUrl = lang === "en" ? contact.linkedInEN : contact.linkedInES;
+
+// Rutas de imágenes del CV
+const images = [
+    `${contact.cvView}/${lang}/cv_1.jpg`,
+    `${contact.cvView}/${lang}/cv_2.jpg`,
+];
+---
+
+<section
+    id="contact"
+    class="relative isolate overflow-hidden px-6 pb-40 rounded-3xl"
+>
+    <!-- Contenido principal -->
+    <div class="max-w-4xl mx-auto text-center space-y-10">
+        <h2
+            class="text-4xl sm:text-5xl font-bold tracking-tight
+             text-slate-900 dark:text-white"
+        >
+            {t("contact.title")}
+        </h2>
+        <p
+            class="max-w-2xl mx-auto text-slate-700 dark:text-gray-300
+             text-base sm:text-lg leading-relaxed"
+        >
+            {t("contact.subtitle")}
+        </p>
+
+        <!-- Grid de botones -->
+        <div class="flex flex-wrap gap-4 justify-center">
+            <Button
+                target="_blank"
+                label="Download CV"
+                icon={LuDownload}
+                href={`${contact.cvDownload}/${lang}/cv.pdf`}
+                variant="solid"
+            />
+            <ImagePreviewer urlImages={images} client:only="react">
+                <Button label="View CV" icon={LuEye} variant="outline" />
+            </ImagePreviewer>
+            <Button
+                target="_blank"
+                label="GitHub"
+                icon={LuGithub}
+                href={`${contact.github}`}
+                variant="ghost"
+            />
+            <Button label="Email" icon={LuMail} href=`${contact.email}` />
+            <Button
+                target="_blank"
+                label="Whatsapp"
+                icon={FaWhatsapp}
+                href=`${contact.whatsapp}`
+            />
+            <Button
+                target="_blank"
+                label="Linkedin"
+                icon={BsLinkedin}
+                href=`${linkedInUrl}`
+            />
+        </div>
+    </div>
+</section>

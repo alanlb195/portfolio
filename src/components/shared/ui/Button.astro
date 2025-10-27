@@ -1,0 +1,60 @@
+---
+import type { IconType } from "react-icons";
+
+interface Props {
+    href?: string;
+    label?: string;
+    icon?: IconType;
+    variant?: "solid" | "outline" | "ghost";
+    size?: "sm" | "md" | "lg";
+    target?: string;
+    rel?: string;
+    className?: string;
+    dataScroll?: string;
+}
+
+// Default values
+const {
+    href,
+    label,
+    icon: Icon,
+    variant = "solid",
+    size = "md",
+    target,
+    rel,
+    className = "",
+    dataScroll,
+} = Astro.props;
+
+// Variant classes
+const base =
+    "cursor-pointer inline-flex items-center justify-center font-medium transition-all duration-200 rounded-xl border dark:border-zinc-300 border-zinc-800 hover:shadow-lg focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0";
+
+const variants = {
+    solid: "bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200",
+    outline:
+        "bg-transparent text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800",
+    ghost: "bg-transparent text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700",
+};
+
+const sizes = {
+    sm: "text-sm px-3 py-1.5 gap-1.5",
+    md: "text-base px-4 py-2 gap-2",
+    lg: "text-lg px-5 py-3 gap-3",
+};
+
+const Tag = href ? "a" : "button";
+---
+
+<Tag
+    data-scroll={dataScroll}
+    href={href}
+    target={target}
+    rel={rel}
+    class={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
+>
+    {Icon && <Icon className="w-5 h-5" />}
+    {
+        label && <span>{label}</span>
+    }
+</Tag>

@@ -1,15 +1,15 @@
 ---
 import { getLangFromUrl, useTranslations } from "@/i18n/utils";
-import CertificateList from "./CertificateList";
+import CertificateList from "./CertificateList.astro";
+// import CertificateList from "./CertificateList";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
 
 <section class="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-    <p class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+    <p class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center font-saira">
         {t("certifications.title")}
     </p>
-
-    <CertificateList lang={lang} client:only="react" />
+    <CertificateList lang={lang} />
 </section>

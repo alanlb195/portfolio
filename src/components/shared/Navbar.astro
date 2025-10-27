@@ -3,45 +3,116 @@ import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-
 const currentPath = Astro.url.pathname;
-const pathWithoutLang = currentPath.replace(/^\/[a-z]{2}(\/|$)/, "/");
 
 import ThemeToggle from "@/components/shared/ThemeToggle.tsx";
 import LangSelect from "./LangSelect.astro";
+import MobileMenuToggle from "./MobileMenuToggle";
+import BasicSkeleton from "./ui/BasicSkeleton.astro";
 ---
 
-<nav class="bg-white shadow dark:bg-gray-800 rounded-b-2xl">
-    <div
-        class="container flex items-center justify-center p-2 mx-auto text-gray-600 dark:text-gray-300 gap-3"
-    >
-        <!-- Links -->
-        <a
-            href=`/${lang}`
-            class:list={{
-                "active-link": pathWithoutLang === "/portfolio",
-            }}
-            class="base-nav-button"
-        >
-            {t("nav.home")}</a
-        >
+<nav
+    class="fixed top-0 w-full z-20 h-16 backdrop-blur-[10px] shadow-sm bg-stone-200/70 dark:bg-slate-900/70 border-b border-stone-400/40 dark:border-slate-700/40"
+>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo -->
+            <a
+                href={`/${lang}`}
+                class="text-xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight hover:opacity-80 transition-opacity"
+            >
+                Alandev.site
+            </a>
 
-        <a
-            href=`/${lang}/blog`
-            class:list={{
-                "active-link": pathWithoutLang === "/blog",
-            }}
-            class="base-nav-button"
-        >
-            {t("nav.about")}
-        </a>
+            <!-- Desktop Menu -->
+            <div
+                class="hidden md:flex items-center gap-6 text-gray-800 dark:text-gray-200 text-base"
+            >
+                <!-- Home -->
+                <a
+                    href={`/${lang}`}
+                    class={`px-3 py-2 font-medium transition-colors duration-200 border-b-2 ${
+                        currentPath === `/${lang}/portfolio`
+                            ? "border-blue-600 text-blue-600 dark:border-blue-300 dark:text-blue-300"
+                            : "border-transparent text-gray-800 hover:text-gray-900 dark:text-gray-200 dark:hover:text-gray-100"
+                    }`}
+                >
+                    {t("nav.home")}
+                </a>
 
-        <!-- Language Selector -->
-        <LangSelect />
+                <!-- Blog -->
+                <a
+                    href={`/${lang}/blog`}
+                    class={`px-3 py-2 font-medium transition-colors duration-200 border-b-2 ${
+                        currentPath.includes("/blog")
+                            ? "border-blue-600 text-blue-600 dark:border-blue-300 dark:text-blue-300"
+                            : "border-transparent text-gray-800 hover:text-gray-900 dark:text-gray-200 dark:hover:text-gray-100"
+                    }`}
+                >
+                    {t("nav.blog")}
+                </a>
 
-        <!-- Dark / Light -->
-        <div class="w-[56px] h-[44px] flex items-center justify-center">
-            <ThemeToggle client:only="react" />
+                <LangSelect />
+
+                <ThemeToggle client:only="react">
+                    <div slot="fallback">
+                        <BasicSkeleton width="w-10" height="h-10" />
+                    </div>
+                </ThemeToggle>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <button
+                id="menu-toggle"
+                class="md:hidden text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100"
+            >
+                <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
         </div>
     </div>
+
+    <!-- Mobile Sidebar -->
+    <div
+        id="mobile-menu"
+        class="fixed top-0 left-0 w-64 h-screen px-5 bg-stone-200 dark:bg-slate-800 shadow-lg z-50
+      transform -translate-x-full transition-transform duration-300 md:hidden"
+    >
+        <div class="flex justify-between items-center my-6">
+            <span
+                class="text-xl font-semibold text-gray-900 dark:text-gray-100"
+            >
+                Menu
+            </span>
+            <button id="menu-close" class="text-gray-700 dark:text-gray-200"
+                >✕</button
+            >
+        </div>
+
+        <div class="flex flex-col gap-4 text-gray-800 dark:text-gray-200">
+            <a href={`/${lang}/portfolio`} class="hover:text-blue-500"
+                >{t("nav.home")}</a
+            >
+            <a href={`/${lang}/blog`} class="hover:text-blue-500"
+                >{t("nav.blog")}</a
+            >
+            <LangSelect />
+            <ThemeToggle client:only="react">
+                <div slot="fallback">
+                    <BasicSkeleton width="w-10" height="h-10" />
+                </div>
+            </ThemeToggle>
+        </div>
+    </div>
+
+    <MobileMenuToggle client:only="react" />
 </nav>

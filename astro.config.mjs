@@ -22,4 +22,7 @@ export default defineConfig({
   output:'server',
   integrations: [mdx(), react(), db(), sitemap()],
   adapter: vercel(),
+  devToolbar: {
+    enabled: false
+  },
 });

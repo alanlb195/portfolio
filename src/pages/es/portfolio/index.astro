@@ -1,29 +1,33 @@
 ---
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
 import Presentation from "@/components/portfolio/Presentation.astro";
-import { Technologies } from "@/components/portfolio/Technologies";
 import MainLayout from "@/layouts/MainLayout.astro";
 import Certificates from "@/components/portfolio/Certificates.astro";
 import Projects from "@/components/portfolio/Projects.astro";
+import AboutMe from "@/components/portfolio/AboutMe.astro";
+import ContactMe from "@/components/portfolio/ContactMe.astro";
+import Technologies from "@/components/portfolio/Technologies.astro";
 ---
 
 <MainLayout>
-    <article>
-        <Presentation />
+    <!--* Presentation -  Hero section -->
+    <Presentation />
 
-        <!-- Swiper  -->
-        <Technologies client:only="react">
-            <div slot="fallback" class="h-[300px] flex items-center justify-center">
-                <div class="animate-pulse bg-gray-300 dark:bg-gray-900 rounded-lg w-full h-full">
-                </div>
-            </div>
-        </Technologies>
+    <!-- Technologies  -->
+    <Technologies />
 
-        <!--Todo: My Projects - only best projects, not all -->
-        <Projects />
+    <!--* My Projects - only best projects, not all -->
+    <!-- <Projects /> -->
 
-        <!-- Todo: More about me - not a simple short about me,  -->
+    <!--* Certifications -->
+    <Certificates />
 
-        <!-- Todo: certificates paginated with view more -->
-        <Certificates />
-    </article>
+    <!--* About Me -->
+    <AboutMe />
+
+    <!--* Contact Me -->
+    <ContactMe />
 </MainLayout>

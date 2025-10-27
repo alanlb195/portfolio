@@ -1,29 +1,11 @@
 @import "tailwindcss";
-@plugin "@midudev/tailwind-animations";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-
-/* navbar - link buttons */
-button,
-a {
-  @apply cursor-pointer;
-}
-
-.base-nav-button {
-  @apply px-4 py-2 sm:px-6 text-sm sm:text-base font-medium text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 rounded-md;
-}
-
-.active-link {
-  @apply border-blue-500 bg-blue-200 dark:bg-blue-900
-}
-
-
-/* navbar - scrollbar adjustment */
-html {
+/* Not working so good with GSAP SmoothTrasition */
+/* html {
   scroll-behavior: smooth;
-  overflow-y: scroll;
-}
+} */
 
 body {
   padding-right: 0 !important;
@@ -33,93 +15,17 @@ body {
 
 /* Mac + Chrome invisible scrollbar styling */
 body::-webkit-scrollbar {
-  width: 12px;
+  display: none;
+  /* Not working so good with GSAP SmoothTrasition, display none for the moment */
+  /* width: 20px; */
 }
 
-body::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-body::-webkit-scrollbar-thumb {
-  background-color: rgba(136, 136, 136, 0.5);
-  border-radius: 6px;
-  border: 3px solid transparent;
-  background-clip: content-box;
+.presentation-line {
+  overflow: hidden;
+  display: block;
 }
 
 
-/* navbar - languages */
-.lang-switch-group {
-  @apply inline-flex overflow-hidden border border-gray-300 dark:border-gray-700 rounded-md;
-}
-
-.lang-switch-button {
-  @apply px-4 py-2 sm:px-6 text-sm sm:text-base font-medium text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 border-r border-gray-300 dark:border-gray-700;
-}
-
-.lang-switch-button:last-child {
-  @apply border-r-0;
-}
-
-.lang-switch-button.active-link {
-  @apply border-blue-500 bg-blue-200 dark:bg-blue-900;
-}
-
-
-
-/* swiper - portfolio page */
-.mySwiper {
-  width: 100%;
-}
-
-.swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* background: white; */
-  font-size: 18px;
-}
-
-
-/* Blog / post */
-
-.blog h1 {
-  @apply text-3xl text-black dark:text-white my-5;
-}
-
-.blog h2 {
-  @apply text-2xl text-blue-500 my-5;
-}
-
-.blog h3 {
-  @apply text-xl text-black dark:text-white my-5;
-}
-
-.blog p {
-  @apply text-black dark:text-white my-5;
-}
-
-.blog a {
-  @apply text-blue-500 dark:hover:text-white;
-}
-
-
-.blog ul {
-  @apply list-disc list-inside my-4 text-black dark:text-white;
-}
-
-.blog ol {
-  @apply list-inside my-4 text-black dark:text-white;
-}
-
-.blog li {
-  @apply mb-2 leading-relaxed;
-}
-
-.blog pre {
-  @apply bg-gray-100 dark:bg-gray-800 rounded-md p-4 my-5 overflow-auto;
-}
-
-.blog code {
-  @apply font-mono text-sm text-gray-800 dark:text-gray-200;
+@theme {
+  --font-saira: "Saira", sans-serif;
 }

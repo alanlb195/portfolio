@@ -1,8 +1,9 @@
 ---
 import LinkWrapper from "@/components/blog/LinkWrapper.astro";
-import MainLayout from "@/layouts/MainLayout.astro";
 import { Image } from "astro:assets";
 import { getEntry } from "astro:content";
+import "../../../styles/blog-slug.css";
+import MainLayout from "@/layouts/MainLayout.astro";
 
 const { lang, slug } = Astro.params;
 const page = await getEntry("blog", `${lang}/${slug}`);
@@ -13,70 +14,104 @@ if (!page) {
 
 const frontmatter = page.data;
 const { Content, headings } = await page.render();
+
+const postUrl = `https://www.alandev.site/${lang}/blog/${slug}`;
 ---
 
-<MainLayout>
-    <section class="blog py-10 max-w-4xl mx-auto">
-        <a
-            href={`/${lang}/blog`}
-            class="inline-block mb-6 text-sm text-blue-600 dark:text-blue-400 hover:underline"
-        >
-            ← Volver
-        </a>
+<MainLayout
+    title={frontmatter.title}
+    description={frontmatter.description}
+    image={frontmatter.image}
+    url={postUrl}
+    keywords={frontmatter.tags ?? ["blog", "Astro", "programación"]}
+>
+    <section class="blog relative max-w-7xl mx-auto px-4 lg:px-8 flex flex-col lg:flex-row gap-10">
+        <!-- Columna izquierda (contenido principal) -->
+        <div class="flex-1 min-w-0">
+            <a
+                href={`/${lang}/blog`}
+                class="inline-block mb-6 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            >
+                {lang === "en" ? "← Back to blog" : "← Regresar al blog"}
+            </a>
 
-        <div class="relative">
-            <Image
-                width={1200}
-                height={500}
-                transition:name={`${frontmatter.image}-image`}
-                class="relative z-10 object-cover w-full rounded-md h-96"
-                src={`/blog/${frontmatter.image}`}
-                alt={frontmatter.image}
-            />
+            <div class="relative mb-8 rounded-2xl overflow-hidden shadow-lg">
+                <Image
+                    width={1200}
+                    height={500}
+                    transition:name={`${frontmatter.image}-image`}
+                    class="w-full h-80 sm:h-96 object-cover"
+                    src={`/blog/${frontmatter.image}`}
+                    alt={frontmatter.image}
+                />
+            </div>
+
+            <h1 class="text-4xl font-extrabold mb-4 text-zinc-900 dark:text-zinc-100 leading-tight">
+                {frontmatter.title}
+            </h1>
+
+            <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-12">
+                {lang === "en" ? "Published:" : "Publicado el:"}{" "}
+                {frontmatter.date.toLocaleDateString(lang, {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                })}
+            </p>
+
+            <article class="prose prose-zinc dark:prose-invert max-w-none prose-headings:scroll-mt-20">
+                <Content components={{ a: LinkWrapper }} />
+            </article>
         </div>
 
-        <h1 class="text-4xl font-bold mb-6 text-zinc-900 dark:text-zinc-100">
-            {frontmatter.title}
-        </h1>
-
-        <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-10">
-            Publicado el {frontmatter.date.toLocaleDateString(lang)}
-        </p>
-
-        <div class="mb-10 border-l-4 border-blue-500 pl-4">
-            <h2
-                class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-2"
-            >
-                Tabla de contenidos
-            </h2>
-            <ol
-                class="list-inside space-y-1 text-sm text-zinc-700 dark:text-zinc-300"
-            >
+        <!-- Columna derecha (tabla de contenido) -->
+        <aside
+            class="lg:w-72 xl:w-80 flex-shrink-0 top-24 self-start
+            bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm
+            border border-zinc-300 dark:border-zinc-700
+            rounded-2xl p-5 shadow-sm
+            sticky hidden lg:block h-fit"
+        >
+            <h3 class="text-lg font-semibold text-zinc-800 dark:text-white mb-4">
+                {lang === "en" ? "Table of Contents" : "Tabla de Contenido"}
+            </h3>
+            <ol class="list-inside space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
                 {
                     headings.map((heading, index) => (
                         <li>
                             <a
-                                href={`#${heading.slug}`}
-                                class="hover:underline hover:text-blue-600 dark:hover:text-blue-400"
+                                data-scroll={`#${heading.slug}`}
+                                class="transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
                             >
-                                {index + 1} - {heading.text}
+                                {index + 1}. {heading.text}
+                            </a>
+                        </li>
+                    ))
+                }
+            </ol>
+        </aside>
+
+        <!-- TOC móvil (solo visible en pantallas pequeñas) -->
+        <div
+            class="lg:hidden rounded-xl bg-white/70 dark:bg-gray-800/60 border border-zinc-300 dark:border-zinc-700 p-4 mb-8"
+        >
+            <h3 class="text-base font-semibold text-zinc-800 dark:text-white mb-2">
+                {lang === "en" ? "Table of Contents" : "Tabla de Contenido"}
+            </h3>
+            <ol class="list-inside space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
+                {
+                    headings.map((heading, index) => (
+                        <li>
+                            <a
+                                data-scroll={`#${heading.slug}`}
+                                class="transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
+                            >
+                                {index + 1}. {heading.text}
                             </a>
                         </li>
                     ))
                 }
             </ol>
         </div>
-
-        <article class="prose prose-zinc dark:prose-invert max-w-none">
-            <Content components={{ a: LinkWrapper }} />
-        </article>
-
-        <button
-            aria-label="go-top"
-            class="fixed bottom-6 right-6 px-4 py-3 rounded-sm bg-blue-600 text-white shadow-lg hover:bg-blue-700"
-            onclick='window.scrollTo({ top: 0, behavior: "smooth" })'
-        >
-        ↑
-        </button>
     </section>
 </MainLayout>
