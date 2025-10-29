@@ -23,7 +23,7 @@ const postUrl = `/${post.slug.replace(/^([a-z]{2})\//, "$1/blog/")}`;
             width={1200}
             height={675}
             transition:name={`${frontmatter.image}-image`}
-            class="w-full aspect-video object-cover transition-transform duration-300 rounded-t-2xl"
+            class="w-full aspect-video object-cover transition-transform duration-300 rounded-2xl"
             src={`/blog/${frontmatter.image}`}
             alt={frontmatter.title}
         />

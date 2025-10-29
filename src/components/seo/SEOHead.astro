@@ -1,0 +1,55 @@
+---
+import { ClientRouter } from "astro:transitions";
+
+interface Props {
+    title?: string;
+    description?: string;
+    image?: string;
+    url?: string;
+    keywords?: string[];
+}
+
+const {
+    title = "Alan Dev",
+    description = "Alan's Blog",
+    image = "https://www.alandev.site/profile_image.jpeg",
+    url = "https://www.alandev.site/",
+    keywords = ["blog", "Astro", "programación"],
+} = Astro.props;
+---
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- SEO -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Alan LB" />
+    <meta name="keywords" content={keywords.join(", ")} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={image} />
+
+    <!-- Hreflang -->
+    <link rel="alternate" hreflang="en" href="https://www.alandev.site/en/" />
+    <link rel="alternate" hreflang="es" href="https://www.alandev.site/es/" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    />
+
+    <!-- ✅ Astro Client Router -->
+    <ClientRouter />
+</head>

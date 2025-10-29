@@ -1,3 +1,5 @@
---- 
-return Astro.redirect('/en');
+---
+const acceptLang = Astro.request.headers.get('accept-language') || '';
+const lang = acceptLang.startsWith('es') ? 'es' : 'en';
+return Astro.redirect(`/${lang}/portfolio`);
 ---

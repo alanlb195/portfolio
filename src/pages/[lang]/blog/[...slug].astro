@@ -3,37 +3,55 @@ import LinkWrapper from "@/components/blog/LinkWrapper.astro";
 import { Image } from "astro:assets";
 import { getEntry } from "astro:content";
 import "../../../styles/blog-slug.css";
-import MainLayout from "@/layouts/MainLayout.astro";
+import MainLayout, { type MainLayoutProps } from "@/layouts/MainLayout.astro";
+import Button from "@/components/shared/ui/Button.astro";
+import { FaArrowLeft } from "react-icons/fa";
+import TableOfContent from "@/components/blog/TableOfContent.astro";
+import FloatingButton from "@/components/shared/ui/FloatingButton";
 
 const { lang, slug } = Astro.params;
 const page = await getEntry("blog", `${lang}/${slug}`);
-
-if (!page) {
-    return Astro.redirect("/404");
-}
+if (!page) return Astro.redirect("/404");
 
 const frontmatter = page.data;
 const { Content, headings } = await page.render();
-
 const postUrl = `https://www.alandev.site/${lang}/blog/${slug}`;
+
+// Tipar las props del layout (opcional, pero recomendado)
+const layoutProps: MainLayoutProps = {
+    title: frontmatter.title,
+    description: frontmatter.description,
+    image: `/blog/${frontmatter.image}`,
+    url: postUrl,
+    keywords: frontmatter.tags ?? ["blog", "Astro", "programación"],
+    lang,
+};
 ---
 
-<MainLayout
-    title={frontmatter.title}
-    description={frontmatter.description}
-    image={frontmatter.image}
-    url={postUrl}
-    keywords={frontmatter.tags ?? ["blog", "Astro", "programación"]}
->
-    <section class="blog relative max-w-7xl mx-auto px-4 lg:px-8 flex flex-col lg:flex-row gap-10">
-        <!-- Columna izquierda (contenido principal) -->
-        <div class="flex-1 min-w-0">
-            <a
+<MainLayout {...layoutProps}>
+
+    <!-- Table of content-->
+    {
+        Astro.request.headers
+            .get("user-agent")
+            ?.includes("Mobile") ? null : (
+            <TableOfContent slot="fixed" headings={headings} />
+        )
+    }
+
+    <!-- Blog-slug Content -->
+    <section
+      class="blog relative mx-auto xl:pl-[13rem] 2xl:pl-0"
+    >
+
+        <div class="flex-1 w-full min-w-0">
+            <Button
                 href={`/${lang}/blog`}
-                class="inline-block mb-6 text-sm text-blue-600 dark:text-blue-400 hover:underline"
-            >
-                {lang === "en" ? "← Back to blog" : "← Regresar al blog"}
-            </a>
+                className="btn mt-5"
+                label="Regresar"
+                icon={FaArrowLeft}
+                variant="ghost"
+            />
 
             <div class="relative mb-8 rounded-2xl overflow-hidden shadow-lg">
                 <Image
@@ -46,72 +64,31 @@ const postUrl = `https://www.alandev.site/${lang}/blog/${slug}`;
                 />
             </div>
 
-            <h1 class="text-4xl font-extrabold mb-4 text-zinc-900 dark:text-zinc-100 leading-tight">
+            <h1
+                class="text-4xl font-extrabold mb-4 text-zinc-900 dark:text-zinc-100 leading-tight"
+            >
                 {frontmatter.title}
             </h1>
 
             <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-12">
                 {lang === "en" ? "Published:" : "Publicado el:"}{" "}
-                {frontmatter.date.toLocaleDateString(lang, {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                })}
+                {
+                    frontmatter.date.toLocaleDateString(lang, {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                    })
+                }
             </p>
 
-            <article class="prose prose-zinc dark:prose-invert max-w-none prose-headings:scroll-mt-20">
+            <article
+                class="prose prose-zinc dark:prose-invert max-w-none prose-headings:scroll-mt-20"
+            >
                 <Content components={{ a: LinkWrapper }} />
             </article>
         </div>
-
-        <!-- Columna derecha (tabla de contenido) -->
-        <aside
-            class="lg:w-72 xl:w-80 flex-shrink-0 top-24 self-start
-            bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm
-            border border-zinc-300 dark:border-zinc-700
-            rounded-2xl p-5 shadow-sm
-            sticky hidden lg:block h-fit"
-        >
-            <h3 class="text-lg font-semibold text-zinc-800 dark:text-white mb-4">
-                {lang === "en" ? "Table of Contents" : "Tabla de Contenido"}
-            </h3>
-            <ol class="list-inside space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
-                {
-                    headings.map((heading, index) => (
-                        <li>
-                            <a
-                                data-scroll={`#${heading.slug}`}
-                                class="transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
-                            >
-                                {index + 1}. {heading.text}
-                            </a>
-                        </li>
-                    ))
-                }
-            </ol>
-        </aside>
-
-        <!-- TOC móvil (solo visible en pantallas pequeñas) -->
-        <div
-            class="lg:hidden rounded-xl bg-white/70 dark:bg-gray-800/60 border border-zinc-300 dark:border-zinc-700 p-4 mb-8"
-        >
-            <h3 class="text-base font-semibold text-zinc-800 dark:text-white mb-2">
-                {lang === "en" ? "Table of Contents" : "Tabla de Contenido"}
-            </h3>
-            <ol class="list-inside space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
-                {
-                    headings.map((heading, index) => (
-                        <li>
-                            <a
-                                data-scroll={`#${heading.slug}`}
-                                class="transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
-                            >
-                                {index + 1}. {heading.text}
-                            </a>
-                        </li>
-                    ))
-                }
-            </ol>
-        </div>
     </section>
+
+    <!-- Floating button -->
+    <FloatingButton slot="floating" client:only="react" />
 </MainLayout>

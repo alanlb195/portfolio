@@ -1,21 +1,20 @@
 ---
 import "@/styles/global.css";
-
 import Navbar from "@/components/shared/Navbar.astro";
 import Footer from "@/components/shared/Footer.astro";
-import MainLayoutScrollAnimation from "./MainLayoutScrollAnimation";
-
+import SEOHead from "@/components/seo/SEOHead.astro";
+import ThemeScript from "@/components/shared/ThemeScript.astro";
 import { getLangFromUrl } from "../i18n/utils";
-const lang = getLangFromUrl(Astro.url);
+import ScrollSmootherInit from "@/components/shared/animations/ScrollSmootherInit";
+import SmoothScrollLinks from "@/components/shared/animations/SmoothScrollLinks";
 
-import { ClientRouter } from "astro:transitions";
-
-interface Props {
+export interface MainLayoutProps {
     title?: string;
     description?: string;
     image?: string;
     url?: string;
     keywords?: string[];
+    lang?: string;
 }
 
 const {
@@ -24,80 +23,31 @@ const {
     image = "https://www.alandev.site/og-image.jpg",
     url = "https://www.alandev.site/",
     keywords = ["blog", "Astro", "programación"],
-} = Astro.props;
+    lang = getLangFromUrl(Astro.url),
+} = Astro.props as MainLayoutProps;
 ---
 
 <html lang={lang}>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.ico " />
-        <link rel="sitemap" href="/sitemap-index.xml" />
-        <meta name="description" content={description} />
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Alan LB" />
-        <meta name="keywords" content={keywords.join(", ")} />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={url} />
-        <meta property="og:image" content={image} />
-        <link
-            rel="alternate"
-            hreflang="en"
-            href="https://www.alandev.site/en/"
-        />
-        <link
-            rel="alternate"
-            hreflang="es"
-            href="https://www.alandev.site/es/"
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,400;0,700;1,400&display=swap"
-            rel="stylesheet"
-        />
-        <title>{title}</title>
-        <ClientRouter />
-    </head>
+    <SEOHead {...{ title, description, image, url, keywords, lang }} />
     <body
         class="flex flex-col min-h-screen bg-stone-300/80 dark:bg-slate-950 text-white"
     >
         <Navbar />
+
+        <!-- Espacio para elementos globales fixed/sticky -->
+        <slot name="fixed" />
+        <slot name="floating" />
+
         <div id="smooth-wrapper">
             <div id="smooth-content">
-                <!--- ALL YOUR CONTENT HERE --->
                 <main class="container mx-auto flex-grow pt-16">
                     <slot />
                 </main>
                 <Footer />
-                <!-- Footer is not a fixed element! -->
             </div>
         </div>
-        <!-- position: fixed elements can go outside (navbar etc.)--->
-    </body><MainLayoutScrollAnimation client:only="react" />
+        <ThemeScript />
+        <ScrollSmootherInit client:only="react" />
+        <SmoothScrollLinks client:only="react" />
+    </body>
 </html>
-
-<script is:inline>
-    function getPreferredTheme() {
-        const storedTheme = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia(
-            "(prefers-color-scheme: dark)",
-        ).matches;
-        return storedTheme === "dark" || (!storedTheme && prefersDark);
-    }
-
-    function applyTheme() {
-        const shouldUseDark = getPreferredTheme();
-        document.documentElement.classList.toggle("dark", shouldUseDark);
-    }
-
-    applyTheme();
-
-    window
-        .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", applyTheme);
-
-    document.addEventListener("astro:after-swap", applyTheme);
-</script>

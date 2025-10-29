@@ -10,6 +10,8 @@ const t = useTranslations(lang);
 const blogPosts = (
     await getCollection("blog", ({ id }) => id.startsWith(`${lang}/`))
 ).sort((a, b) => a.id.localeCompare(b.id));
+
+const filteredPosts = blogPosts.filter(post => post.data.isDraft === false);
 ---
 
 <MainLayout
@@ -26,11 +28,16 @@ const blogPosts = (
                 </h1>
             </div>
 
+            <!-- class="grid grid-cols-1 gap-8 mt-8 lg:grid-cols-3 md:grid-cols-2" -->
             <div
-                class="grid grid-cols-1 gap-8 mt-8 lg:grid-cols-3 md:grid-cols-2"
+                class="grid gap-10 mt-12 sm:grid-cols-2 lg:grid-cols-3 xl:gap-12"
             >
-                {blogPosts.map((post) => <BlogCard post={post} />)}
-            </div>
+                {filteredPosts.map(
+                    (post) => (
+                        <BlogCard post={post} />
+                    ))
+                }
+            </>
         </div>
     </section>
 </MainLayout>

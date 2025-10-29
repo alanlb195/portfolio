@@ -29,3 +29,8 @@ body::-webkit-scrollbar {
 @theme {
   --font-saira: "Saira", sans-serif;
 }
+
+@theme {
+  --font-inter: "Inter", sans-serif;
+}
+

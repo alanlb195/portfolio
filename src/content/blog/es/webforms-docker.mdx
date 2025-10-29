@@ -8,7 +8,7 @@ tags: [Docker, Legacy Systems, ASP.NET, WebForms, Crystal Reports, DevOps]
 isDraft: false
 ---
 
-## Introducción
+# Introducción
 
 En el entorno empresarial, no es raro encontrarse con aplicaciones **legacy** que, a pesar de estar construidas sobre tecnologías consideradas obsoletas, siguen siendo críticas para la operación y rentabilidad del negocio. Este fue exactamente el caso que me motivó a escribir esta entrada: migrar una aplicación basada en **ASP.NET WebForms** con integración de **Crystal Reports** hacia un entorno **Dockerizado**.
 
@@ -61,7 +61,7 @@ EXPOSE 80
 CMD ["powershell", "-Command", "Start-Service w3svc; while ($true) { Start-Sleep -Seconds 3600 }"]
 ```
 
-## Scripts auxiliares y configuración de IIS
+# Scripts auxiliares y configuración de IIS
 
 Probablemente notaron que en el proyecto incluyo algunos archivos con extensión .ps1. Estos son scripts de PowerShell, y los organicé dentro de una carpeta llamada powershell_scripts. Esta decisión fue intencional: mantenerlos separados del Dockerfile principal me permite una mejor organización y escalabilidad del proyecto.
 
@@ -96,7 +96,7 @@ Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole, IIS-WebSer
 Write-Host "IIS successfully Enabled."
 ```
 
-## Instalación de Crystal Reports
+# Instalación de Crystal Reports
 
 
 Uno de los principales retos de migrar esta aplicación legacy fue su dependencia de Crystal Reports Runtime. Sin esta librería, la aplicación simplemente no puede iniciarse, generando errores críticos al momento de renderizar reportes.
@@ -158,7 +158,7 @@ else {
 }
 ```
 
-## Construcción de la imagen Docker
+# Construcción de la imagen Docker
 
 El build de la imagen requiere de dos cosas:
 
@@ -181,7 +181,7 @@ Estructura del proyecto
 │   └── Installation_clean.ps1
 ```
 
-## Container execution
+# Container execution
 
 Comando para construir la imagen y hacer el build en un container:
 
@@ -192,7 +192,7 @@ docker run -d -p 8080:80 --name webforms_app webforms-app .
 
 ```
 
-## Conclusión
+# Conclusión
 
 Migrar una aplicación legacy basada en ASP.NET WebForms con Crystal Reports a un entorno contenerizado no es una tarea trivial. Requiere entender tanto las limitaciones del stack original como las ventajas de mantenerlo y mejorarlo, las restricciones del ecosistema Docker, especialmente cuando se trabaja con contenedores Windows, que imponen ciertas particularidades frente a los contenedores Linux tradicionales.
 
@@ -206,7 +206,7 @@ Este tipo de migraciones no solo modernizan la infraestructura, sino que abren l
 Si estás enfrentando una situación similar, mi consejo es claro: no subestimes lo que puedes contenerizar. Con algo de investigación, paciencia y pruebas iterativas, incluso una aplicación heredada puede dar el salto hacia una arquitectura moderna sin necesidad de ser reescrita desde cero.
 
 
-## Agradecimientos y repositorio de referencia
+# Agradecimientos y repositorio de referencia
 
 Quiero agradecer especialmente al creador del siguiente repositorio, cuya solución me ayudó a entender mejor el proceso de instalación de Crystal Reports en un entorno Dockerizado:
 

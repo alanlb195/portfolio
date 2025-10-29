@@ -1,9 +1,251 @@
 ---
-title: 'Arquitectura limpia en Nest JS'
+title: 'Clean Architecture in NestJS'
 date: 2025-07-27
-description: 'Una plantilla de una aplicacion nest js que implementa Clean Architecture, un ejemplo practico del poder de clean architecture.'
+description: 'A NestJS application template implementing Clean Architecture — a practical example of the power of this approach.'
 author: Alan LB
 image: 'images/clean-architecture-nestjs.webp'
-tags: [NestJS, Clean Architecture, Template Projects, Backend, Nest js, Software Architecture]
+tags: [NestJS, Clean Architecture, Template Projects, Backend, NestJS, Software Architecture]
 isDraft: false
 ---
+
+# Introduction
+
+In this article, we’ll explore **how to implement Clean Architecture in a NestJS project**, understanding **when it makes sense to apply it** and using a **practical template** you can adapt to your own projects.
+
+The goal is to **be direct and practical**, avoiding unnecessary theory and focusing on **real-world application** of these principles.
+
+---
+
+# What is Clean Architecture
+
+**Clean Architecture** is a software design approach that aims to **separate responsibilities** and maintain **independence** from frameworks, databases, or user interfaces.
+
+In other words, if tomorrow you decide to switch the database, a dependency, or even the entire framework, **you shouldn’t have to rewrite half your project**.  
+This architecture promotes flexibility, maintainability, and scalability.
+
+---
+
+# Pros and Cons of Clean Architecture
+
+Like any approach, Clean Architecture comes with both benefits and trade-offs.
+
+- **Pros:**
+  - Modular and maintainable codebase.  
+  - Easier testing and code reuse.  
+  - Technology changes without affecting business logic.
+
+- **Cons:**
+  - Higher initial complexity.  
+  - Steeper learning curve.  
+  - Might be overkill for small or short-lived projects.
+
+Clean Architecture **makes the most sense for projects that aim to evolve and scale** over time.  
+If you’re building a prototype or a simple app, it might not be the best choice.
+
+---
+
+# Clean Architecture Layers
+
+While naming may vary from project to project, the core principle remains the same:  
+**separate responsibilities and keep the domain independent from technical details.**
+
+A typical structure in **NestJS** looks like this:
+
+## Domain (or Core)
+
+Contains the **heart of the business logic**, completely independent of any frameworks or external libraries.
+
+Includes:
+- **Entities:** represent the main business concepts.  
+- **Business rules:** pure validation and logic.
+
+**Goal:** this layer should work regardless of whether you use NestJS, Express, or any other framework.
+
+---
+
+## Application (or Use Cases)
+
+Defines **what the system does** and **how its internal parts interact**.
+
+Includes:
+- Use cases that orchestrate business logic.  
+- Interfaces or ports that the infrastructure must implement (e.g., repositories).
+
+**Goal:** contain the application logic without depending on concrete implementations.
+
+---
+
+## Infrastructure
+
+Contains all the **technical implementations**.
+
+Includes:
+- Repository implementations of domain ports.  
+- Integrations with external APIs, ORMs, messaging services, etc.  
+- NestJS-specific configuration.
+
+**Goal:** if you switch ORMs (for example, from TypeORM to Prisma), you should only modify this layer.
+
+---
+
+## Presentation (or Interface Adapters)
+
+Acts as the **entry point** to the system.
+
+Includes:
+- Controllers (REST, GraphQL, gRPC, etc.).  
+- DTOs and input/output validation.
+
+**Goal:** expose your application logic without allowing business rules to depend on technical details.
+
+---
+
+# Practical Example: Clean Architecture with NestJS
+
+To understand these concepts better, let’s build a small **NestJS** application applying Clean Architecture principles.
+
+## Technologies Used
+
+- **TypeScript:** strong typing across all layers.  
+- **NestJS:** the main framework for the presentation layer.  
+- **Prisma ORM:** modern, type-safe database handling.  
+- **PostgreSQL (Docker):** relational database for persistence.
+
+The goal isn’t to build a complex app, but to **understand how each layer interacts and stays independent**.
+
+---
+
+## Project Structure
+
+This folder structure follows the **Dependency Rule**:  
+outer layers depend on inner ones — never the other way around.
+
+```bash
+/src
+├── core/            # Inner circle: entities and business rules
+├── application/     # Middle circle: use cases and application logic
+├── infrastructure/  # Outer circle: technical implementations
+└── presentation/    # Outer circle: controllers and I/O
+```
+
+Each folder serves a clear purpose. Let’s describe each one.
+
+---
+
+# Core Layer (Domain)
+
+Contains **pure business logic** and does **not depend on any other layer**.
+
+### Structure
+
+- **`core/entities`**  
+  Classes that represent fundamental business objects.  
+  **Example:** `user.entity.ts`, `post.entity.ts`.
+
+- **`core/repositories`**  
+  Interfaces that define how to communicate with the data layer.  
+  **Example:** `user.repository.interface.ts` with methods such as `findById`, `save`, `delete`.
+
+- **`core/value-objects`**  
+  Objects that encapsulate values and validation.  
+  **Example:** `email.vo.ts` ensures a string is a valid email.
+
+- **`core/exceptions`**  
+  Custom domain exceptions.  
+  **Example:** `domain-exceptions.ts` with `UserNotFoundException`.
+
+---
+
+# Application Layer (Use Cases)
+
+Orchestrates the **data flow between the core entities and external layers**.
+
+### Structure
+
+- **`application/commands`**  
+  Actions that modify the system state (create, update, delete).  
+  **Example:** `create-user.command.ts` coordinates the creation of a user.
+
+- **`application/queries`**  
+  Actions that read data without modifying it.  
+  **Example:** `get-user.query.ts`.
+
+- **`application/dtos`**  
+  Simple objects that transport data between layers.  
+  **Example:** `create-user.dto.ts`.
+
+- **`application/mappers`**  
+  Convert entities into DTOs or vice versa.  
+  **Example:** `user.mapper.ts`.
+
+---
+
+# Infrastructure Layer (Implementations)
+
+Contains the **concrete implementations** defined in the domain layer.
+
+### Structure
+
+- **`infrastructure/repositories`**  
+  Implementations of the repositories defined in the core layer.  
+  **Example:** `user.repository.ts` uses Prisma for data persistence.
+
+- **`infrastructure/database`**  
+  Database configuration and connection setup.  
+  **Example:** `prisma.service.ts`.
+
+- **`infrastructure/logger`**, **`infrastructure/config`**  
+  Support services such as logging and configuration.
+
+---
+
+# Presentation Layer (Entry Point)
+
+Responsible for **interacting with the outside world**, such as REST APIs.
+
+### Structure
+
+- **`presentation/modules`**  
+  NestJS modules that group controllers and providers.
+
+- **`presentation/modules/user/user.controller.ts`**  
+  The controller receives HTTP requests, validates data (DTOs), calls the corresponding use case, and returns the response.  
+  The controller **does not contain business logic** — it only orchestrates the flow between the client and the application.
+
+---
+
+# Request Flow: Creating a User
+
+Example of the flow for a `POST /users` request:
+
+1. **Presentation:**  
+   The `user.controller.ts` receives the request and validates the data using `CreateUserDto`.
+
+2. **Controller → Application:**  
+   The controller invokes the `CreateUserCommand` from the `application` layer, passing the DTO.
+
+3. **Application:**  
+   - Uses value objects (`core`) for validation.  
+   - Creates a `User` entity.  
+   - Calls `save()` from the `UserRepositoryInterface`.
+
+4. **Dependency Injection (NestJS):**  
+   NestJS injects the concrete implementation (`user.repository.ts` from `infrastructure`).
+
+5. **Infrastructure:**  
+   The repository uses Prisma to persist the user data in the database.
+
+6. **Return:**  
+   The created entity is mapped into a response DTO and returned to the client.
+
+---
+
+# Conclusion
+
+**Clean Architecture in NestJS** provides significant benefits:
+
+- **Testability:** you can test business logic without a database or web server.  
+- **Independence:** the core of your application doesn’t depend on frameworks or tools.  
+- **Maintainability:** clearly defined responsibilities make the codebase easier to understand, debug, and extend.
+
+While it requires a higher initial investment, the benefits in **scalability and software quality** make it well worth it for medium and large projects.

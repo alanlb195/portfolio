@@ -25,4 +25,8 @@ export default defineConfig({
   devToolbar: {
     enabled: false
   },
+  redirects: {
+    '/es': '/es/portfolio',
+    '/en': '/en/portfolio',
+  }
 });
