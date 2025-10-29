@@ -1,7 +1,5 @@
 ---
-import { FaArrowDown } from "react-icons/fa";
 import BasicSkeleton from "../shared/ui/BasicSkeleton.astro";
-import Button from "../shared/ui/Button.astro";
 import TechnologiesSwiper from "./TechnologiesSwiper";
 
 import { getLangFromUrl, useTranslations } from "@/i18n/utils";
@@ -28,7 +26,6 @@ const t = useTranslations(lang);
                             <BasicSkeleton
                                 width="w-full"
                                 height="h-[120px]"
-                                rounded="rounded-md"
                             />
                         ))
                     }

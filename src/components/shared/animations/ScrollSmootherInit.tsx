@@ -15,6 +15,9 @@ export default function ScrollSmootherInit() {
             normalizeScroll: true,
         });
 
+        // guarda una referencia global - útil para modales o menús que la lleguen a necesitar, ej. para bloquear el scroll al abrir un modal
+        (window as any).ScrollSmoother = ScrollSmoother;
+
         return () => {
             smoother.kill();
         };

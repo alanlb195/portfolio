@@ -26,6 +26,19 @@ const ImageModal: React.FC<ImageModalProps> = ({ images, open, onClose }) => {
 
     }, [open]);
 
+    // Pausar ScrollSmoother cuando el modal está abierto
+    useEffect(() => {
+        // Verifica si GSAP y ScrollSmoother existen
+        const smoother = (window as any).ScrollSmoother?.get();
+        if (open && smoother) {
+            smoother.paused(true);
+        }
+        return () => {
+            if (smoother) smoother.paused(false);
+        };
+    }, [open]);
+
+
     const handleCloseAnimationEnd = () => {
         setIsVisible(false); // ahora sí desmonta
     };
@@ -74,7 +87,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ images, open, onClose }) => {
                 {/* Botón de cierre */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-zinc-500 hover:text-red-500 transition-colors duration-200"
+                    className="absolute top-4 right-4 text-zinc-500 hover:text-red-500 transition-colors duration-200 cursor-pointer"
                 >
                     <IoCloseCircle size={40} />
                 </button>
