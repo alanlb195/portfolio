@@ -10,242 +10,373 @@ isDraft: false
 
 # Introduction
 
-In this article, we’ll explore **how to implement Clean Architecture in a NestJS project**, understanding **when it makes sense to apply it** and using a **practical template** you can adapt to your own projects.
+In this article, I present an analysis of the pros and cons of implementing Clean Architecture in a software solution. I also include a practical showcase using NestJS to illustrate how this approach can be applied in a real-world context and what impact it has on project design and maintainability.
 
-The goal is to **be direct and practical**, avoiding unnecessary theory and focusing on **real-world application** of these principles.
+Rather than providing a step-by-step guide, my goal is to reflect on the architectural decisions that come with applying Clean Architecture, and to highlight how it influences scalability, maintainability, and overall code clarity.
 
 ---
 
 # What is Clean Architecture
 
-**Clean Architecture** is a software design approach that aims to **separate responsibilities** and maintain **independence** from frameworks, databases, or user interfaces.
+Clean Architecture is a software design pattern that aims to separate responsibilities within an application and maintain independence from frameworks, databases, or external libraries.
 
-In other words, if tomorrow you decide to switch the database, a dependency, or even the entire framework, **you shouldn’t have to rewrite half your project**.  
-This architecture promotes flexibility, maintainability, and scalability.
+In essence, it suggests that the core of the system —the business rules and logic that truly define it— should remain completely isolated from implementation details.
+This means that if you decide to change the database, a dependency, or even the entire framework, you shouldn’t have to rewrite most of your project.
+
+Clean Architecture promotes flexibility, maintainability, and scalability, although it requires a higher initial investment in learning and design to apply it effectively.
+
+---
+# Advantages and Disadvantages of Clean Architecture
+
+Like any design approach, **Clean Architecture offers clear benefits but also comes with certain trade-offs** that should be considered before adopting it.
 
 ---
 
-# Pros and Cons of Clean Architecture
+### Advantages
 
-Like any approach, Clean Architecture comes with both benefits and trade-offs.
+- **Modular and maintainable code**: responsibilities are clearly defined, making the system easier to understand, extend, and modify.
 
-- **Pros:**
-  - Modular and maintainable codebase.  
-  - Easier testing and code reuse.  
-  - Technology changes without affecting business logic.
+- **Simpler and more reliable testing**: by isolating business rules, unit tests can be executed without depending on frameworks or databases.
 
-- **Cons:**
-  - Higher initial complexity.  
-  - Steeper learning curve.  
-  - Might be overkill for small or short-lived projects.
+- **Technological independence**: frameworks, libraries, or data sources can be replaced without impacting the core business logic.
 
-Clean Architecture **makes the most sense for projects that aim to evolve and scale** over time.  
-If you’re building a prototype or a simple app, it might not be the best choice.
+- **Structured scalability**: the architecture supports project growth without becoming unmanageable.
+
+---
+
+### Disadvantages
+
+- **Higher initial complexity**: it requires careful planning and a solid understanding of its principles before it can be implemented properly.
+
+- **Steeper learning curve**: for new or small teams, it can represent a significant investment of time.
+
+- **Overhead for simple projects**: for short-lived or limited-scope applications, it may be a more complex solution than necessary.
+
+---
+
+In summary, **Clean Architecture truly makes sense when a project aims to evolve, scale, or remain maintainable over time.**  
+Conversely, for a prototype or a product with high uncertainty, **a simpler architectural approach can often be a more practical choice.**
 
 ---
 
 # Clean Architecture Layers
 
-While naming may vary from project to project, the core principle remains the same:  
-**separate responsibilities and keep the domain independent from technical details.**
-
-A typical structure in **NestJS** looks like this:
-
-## Domain (or Core)
-
-Contains the **heart of the business logic**, completely independent of any frameworks or external libraries.
-
-Includes:
-- **Entities:** represent the main business concepts.  
-- **Business rules:** pure validation and logic.
-
-**Goal:** this layer should work regardless of whether you use NestJS, Express, or any other framework.
-
----
-
-## Application (or Use Cases)
-
-Defines **what the system does** and **how its internal parts interact**.
-
-Includes:
-- Use cases that orchestrate business logic.  
-- Interfaces or ports that the infrastructure must implement (e.g., repositories).
-
-**Goal:** contain the application logic without depending on concrete implementations.
-
----
-
-## Infrastructure
-
-Contains all the **technical implementations**.
-
-Includes:
-- Repository implementations of domain ports.  
-- Integrations with external APIs, ORMs, messaging services, etc.  
-- NestJS-specific configuration.
-
-**Goal:** if you switch ORMs (for example, from TypeORM to Prisma), you should only modify this layer.
-
----
-
-## Presentation (or Interface Adapters)
-
-Acts as the **entry point** to the system.
-
-Includes:
-- Controllers (REST, GraphQL, gRPC, etc.).  
-- DTOs and input/output validation.
-
-**Goal:** expose your application logic without allowing business rules to depend on technical details.
-
----
-
-# Practical Example: Clean Architecture with NestJS
-
-To understand these concepts better, let’s build a small **NestJS** application applying Clean Architecture principles.
-
-## Technologies Used
-
-- **TypeScript:** strong typing across all layers.  
-- **NestJS:** the main framework for the presentation layer.  
-- **Prisma ORM:** modern, type-safe database handling.  
-- **PostgreSQL (Docker):** relational database for persistence.
-
-The goal isn’t to build a complex app, but to **understand how each layer interacts and stays independent**.
-
----
-
-## Project Structure
-
-This folder structure follows the **Dependency Rule**:  
-outer layers depend on inner ones — never the other way around.
+While naming may vary from project to project, the core principle remains the same:   **separate responsibilities and keep the domain independent from technical details.** A typical structure in **NestJS** looks like this:
 
 ```bash
-/src
-├── core/            # Inner circle: entities and business rules
-├── application/     # Middle circle: use cases and application logic
-├── infrastructure/  # Outer circle: technical implementations
-└── presentation/    # Outer circle: controllers and I/O
+📦src
+ ┣ 📂application              → Application logic (CQRS, DTOs, mappers)
+ ┃ ┣ 📂commands
+ ┃ ┣ 📂queries
+ ┃ ┣ 📂dtos
+ ┃ ┗ 📂mappers
+ ┣ 📂core                     → Pure domain (entities, value objects, domain services)
+ ┃ ┣ 📂entities
+ ┃ ┣ 📂value-objects
+ ┃ ┣ 📂repositories           → Contracts (interfaces)
+ ┃ ┗ 📂services               → Business rules (domain services)
+ ┣ 📂infrastructure           → Technical implementations
+ ┃ ┣ 📂database               → ORM / database integration
+ ┃ ┣ 📂repositories           → Concrete repository implementations
+ ┃ ┣ 📂logger                 → Logging infrastructure
+ ┃ ┣ 📂services               → Infrastructure-level services
+ ┃ ┗ 📂config                 → Project configuration
+ ┣ 📂presentation             → API layer (controllers, modules, guards)
+ ┃ ┣ 📂modules
+ ┃ ┗ 📂guards
+ ┣ 📂shared                  → Cross-cutting concerns (decorators, constants)
+ ┗ 📜app.module.ts
 ```
 
-Each folder serves a clear purpose. Let’s describe each one.
+In the following sections, each layer will be explained in more detail, along with a brief description of what it contains and how it contributes to the overall architecture.
+
+# The Domain Layer (Core)
+
+The **core** layer —also known as the *Domain Layer*— is the heart of the application. It contains the business logic, domain rules, and the decisions that define how the system should behave.  
+It is completely independent from external technologies such as frameworks, databases, or any infrastructure services.
+
+The goal of this layer is to remain **stable**, **reusable**, and **technology-agnostic**, ensuring that business complexity is encapsulated and protected from the rest of the system.
 
 ---
 
-# Core Layer (Domain)
+# Structure of `src/core`
 
-Contains **pure business logic** and does **not depend on any other layer**.
+## `entities/`
 
-### Structure
+**Entities** represent the fundamental objects of the domain. They have a **unique identity** that persists over time, regardless of their attributes.
 
-- **`core/entities`**  
-  Classes that represent fundamental business objects.  
-  **Example:** `user.entity.ts`, `post.entity.ts`.
+In this example, we have two main entities:
 
-- **`core/repositories`**  
-  Interfaces that define how to communicate with the data layer.  
-  **Example:** `user.repository.interface.ts` with methods such as `findById`, `save`, `delete`.
+- `user.entity.ts`: Represents a user in the system.  
+- `post.entity.ts`: Represents a publication created by a user.
 
-- **`core/value-objects`**  
-  Objects that encapsulate values and validation.  
-  **Example:** `email.vo.ts` ensures a string is a valid email.
-
-- **`core/exceptions`**  
-  Custom domain exceptions.  
-  **Example:** `domain-exceptions.ts` with `UserNotFoundException`.
+Each entity encapsulates attributes and essential behaviors for its role in the domain.
 
 ---
 
-# Application Layer (Use Cases)
+## `value-objects/`
 
-Orchestrates the **data flow between the core entities and external layers**.
+**Value Objects** represent domain concepts that **do not have identity**. They are **immutable**, and two Value Objects are equal when their internal values match.
 
-### Structure
+Examples in the project:
 
-- **`application/commands`**  
-  Actions that modify the system state (create, update, delete).  
-  **Example:** `create-user.command.ts` coordinates the creation of a user.
+- `email.vo.ts`: Encapsulates validation and formatting of an email address.  
+- `name.vo.ts`: Defines rules for a user's name (length, format, etc.).  
+- `throttle-limit.vo.ts`: Represents a usage limit or maximum number of requests.
 
-- **`application/queries`**  
-  Actions that read data without modifying it.  
-  **Example:** `get-user.query.ts`.
-
-- **`application/dtos`**  
-  Simple objects that transport data between layers.  
-  **Example:** `create-user.dto.ts`.
-
-- **`application/mappers`**  
-  Convert entities into DTOs or vice versa.  
-  **Example:** `user.mapper.ts`.
+Using Value Objects adds **robustness**, **consistency**, and prevents invalid data from entering the domain.
 
 ---
 
-# Infrastructure Layer (Implementations)
+## `repositories/`
 
-Contains the **concrete implementations** defined in the domain layer.
+This folder does not contain repository implementations; it defines **only their interfaces**.  
+This ensures the domain does not depend on any specific database or persistence technology.
 
-### Structure
+Examples:
 
-- **`infrastructure/repositories`**  
-  Implementations of the repositories defined in the core layer.  
-  **Example:** `user.repository.ts` uses Prisma for data persistence.
+- `user.repository.interface.ts`: Defines methods like `findById`, `findByEmail`, `create`, `update`, etc.  
+- `post.repository.interface.ts`: Contracts for handling post persistence.
 
-- **`infrastructure/database`**  
-  Database configuration and connection setup.  
-  **Example:** `prisma.service.ts`.
-
-- **`infrastructure/logger`**, **`infrastructure/config`**  
-  Support services such as logging and configuration.
+The actual implementations live in the **infrastructure** layer, keeping the domain fully isolated.
 
 ---
 
-# Presentation Layer (Entry Point)
+## `services/`
 
-Responsible for **interacting with the outside world**, such as REST APIs.
+**Domain services** coordinate business rules involving entities, Value Objects, and repositories.  
+They encapsulate logic that does not fit within a single entity.
 
-### Structure
+Examples:
 
-- **`presentation/modules`**  
-  NestJS modules that group controllers and providers.
-
-- **`presentation/modules/user/user.controller.ts`**  
-  The controller receives HTTP requests, validates data (DTOs), calls the corresponding use case, and returns the response.  
-  The controller **does not contain business logic** — it only orchestrates the flow between the client and the application.
-
----
-
-# Request Flow: Creating a User
-
-Example of the flow for a `POST /users` request:
-
-1. **Presentation:**  
-   The `user.controller.ts` receives the request and validates the data using `CreateUserDto`.
-
-2. **Controller → Application:**  
-   The controller invokes the `CreateUserCommand` from the `application` layer, passing the DTO.
-
-3. **Application:**  
-   - Uses value objects (`core`) for validation.  
-   - Creates a `User` entity.  
-   - Calls `save()` from the `UserRepositoryInterface`.
-
-4. **Dependency Injection (NestJS):**  
-   NestJS injects the concrete implementation (`user.repository.ts` from `infrastructure`).
-
-5. **Infrastructure:**  
-   The repository uses Prisma to persist the user data in the database.
-
-6. **Return:**  
-   The created entity is mapped into a response DTO and returned to the client.
+- `user.service.ts`: Handles user creation and updates, complex validations, and cross-entity rules.  
+  It uses Value Objects (`Email`, `FirstName`, `LastName`) to ensure validated data enters the domain.
+- `post.service.ts`: Contains domain logic related to posts that does not belong inside the `Post` entity.  
+- `throttler.service.ts`: Defines the domain rules for managing request limits.
 
 ---
 
-# Conclusion
+## `exceptions/`
 
-**Clean Architecture in NestJS** provides significant benefits:
+This folder contains **domain exceptions**, used to express business errors clearly and consistently.
 
-- **Testability:** you can test business logic without a database or web server.  
-- **Independence:** the core of your application doesn’t depend on frameworks or tools.  
-- **Maintainability:** clearly defined responsibilities make the codebase easier to understand, debug, and extend.
+Includes:
 
-While it requires a higher initial investment, the benefits in **scalability and software quality** make it well worth it for medium and large projects.
+- **`DomainException`**: Base class for all domain exceptions.  
+- **`EntityNotFoundException`**: When an entity does not exist.  
+- **`EntityAlreadyExistsException`**: When an entity is already registered.  
+- **`InvalidValueObjectException`**: For invalid Value Object data.  
+- **Throttling exceptions**: When request-limit rules are violated.
+
+These exceptions help quickly identify the origin and type of error without relying on generic exceptions.
+
+---
+
+## # The Application Layer (Application)
+
+The **application** layer defines the system’s *use cases*. Its main role is to coordinate the flow between incoming data and the domain, without containing any business rules itself.
+
+In other words, this layer decides **what needs to be done**, but not **how the internal logic works**—that belongs to the `core` layer.
+
+In this project, the application layer is intentionally simple to keep the template easy to understand.
+
+---
+
+## Structure of `src/application`
+
+### `commands/`
+**Commands** represent operations that modify the system, such as creating or updating a user.  
+Each command has a *handler* that executes the use case by calling domain services.
+
+Example:
+- `create-user.command.ts`
+
+---
+
+### `queries/`
+**Queries** represent read-only operations.  
+They do not change the system state; they only retrieve information from the domain or repositories.
+
+Example:
+- `get-user.query.ts`
+
+---
+
+### `dtos/`
+DTOs define the shape of the data coming into or leaving the application.  
+They ensure this layer stays independent from the domain and external concerns.
+
+Examples:
+- `create-user.dto.ts`
+- `responses/user.response.ts`
+
+---
+
+### `mappers/`
+**Mappers** transform domain entities into output DTOs.  
+This keeps the domain clean and prevents exposing internal details.
+
+Example:
+- `user.mapper.ts`
+
+---
+
+## Summary
+
+The **application** layer:
+- coordinates use cases,
+- separates read and write operations (Commands / Queries),
+- structures and validates data with DTOs,
+- transforms entities into response objects through mappers.
+
+Its purpose is to keep the domain pure and provide a clear, organized flow for every system operation.
+
+---
+
+
+# The Infrastructure Layer
+
+The **Infrastructure** layer is where the domain abstractions connect with real technologies. While the **core** defines *what* must be done, this layer defines *how* it is carried out using concrete tools such as Prisma, external services, logging, or configuration modules.
+
+Here is where Dependency Inversion materializes: upper layers depend on interfaces, and **only Infrastructure knows the real implementations**.
+
+---
+
+## Structure of `src/infrastructure`
+
+### `repositories/`
+Concrete implementations of the repositories defined in the domain.
+
+- **`user.repository.ts`**  
+  Implements `IUserRepository` using Prisma. Executes real queries and transforms results into domain entities.
+
+- **`post.repository.ts`**  
+  Concrete persistence of the `Post` entity.
+
+- **`base.repository.ts`**  
+  Shared functionalities (error handling, helpers).
+
+---
+
+### `database/`
+Database configuration and access.
+
+- **`prisma.service.ts`**  
+  Wraps `PrismaClient` and exposes it to the application.
+
+- **`prisma.module.ts`**  
+  Module that provides the Prisma service through dependency injection.
+
+---
+
+### `services/`
+Services with technological dependencies.
+
+- **`throttler.service.ts`**  
+  Rate-limiting implementation at the infrastructure level (e.g., in-memory or Redis).
+
+---
+
+### `config/`
+Environment variable and configuration management.
+
+- **`configuration.ts`**  
+  Loads, validates, and exposes environment variables using `@nestjs/config`.
+
+---
+
+### `logger/`
+Concrete implementations for logging.
+
+- **`logger.interface.ts`**  
+  Abstract contract for any logger.
+
+- **`logger.service.ts`**  
+  Concrete implementation (from `console.log` to providers like Sentry or Datadog).
+
+---
+
+
+# The Presentation Layer
+
+The `presentation` layer is the external face of the application. It is the entry and exit point for all interactions with clients (web apps, mobile apps, or other services). In this project, this layer implements a **REST API** using **NestJS**.
+
+Its main responsibility is to handle the **HTTP protocol**, which includes:
+
+- Defining routes and endpoints.
+- Handling HTTP verbs (GET, POST, PUT, DELETE, etc.).
+- Processing and validating incoming data (body, params, query).
+- Delegating the execution of use cases to the `application` layer.
+- Formatting output data and setting appropriate HTTP status codes.
+
+This layer must remain **thin**: it should not contain business logic. Its sole purpose is to receive a request, delegate it, and return a response.
+
+---
+
+## Structure of `src/presentation`
+
+### `modules`
+
+In NestJS, the application is organized into modules. Each module groups related functionality. In this layer, modules contain controllers and their dependencies.
+
+- **`user/user.controller.ts`**  
+  The controller defines the user-related endpoints, for example:
+  - `@Post()` to create a new user.
+  - `@Get(':id')` to retrieve a user by ID.
+
+  It uses decorators like `@Body()` and `@Param()` to extract request data and validate it using DTOs.
+
+  Its only logic is to delegate execution to the application layer through `CommandBus` or `QueryBus`.
+
+- **`user/user.module.ts`**  
+  Encapsulates the controller and registers its dependencies. It may also import other modules required by controllers.
+
+---
+
+## `guards`
+
+Guards determine whether a request should proceed. They are commonly used for authentication, authorization, or endpoint protection.
+
+- **`throttler.guard.ts`**  
+  Implements rate limiting to protect the API from abusive traffic.  
+  It intercepts the request before it reaches the controller and decides whether the client has exceeded its request quota.
+
+---
+
+## Decorators (`src/shared/decorators`)
+
+Although not strictly inside the `presentation` folder, custom decorators are typically used in this layer.
+
+- **`throttle.decorator.ts`**  
+  Enables declarative rate limiting on controller methods, for example:  
+  `@Throttle(60, 5)` → allow 5 requests every 60 seconds.
+
+---
+
+## HTTP Request Flow
+
+1. **Incoming Request:** A client sends `POST /users` with a JSON body.
+
+2. **NestJS Routing:** The framework routes the request to the method decorated with `@Post()` in the `UserController`.
+
+3. **Guards Execution:** The `ThrottlerGuard` triggers. If the client exceeded the limit → respond with `429 Too Many Requests`.
+
+4. **Data Validation:** The `@Body()` decorator validates the JSON payload using `CreateUserDto`. If validation fails → NestJS automatically returns `400 Bad Request`.
+
+5. **Delegation to Application Layer:** The controller executes its only task: `this.commandBus.execute(new CreateUserCommand(dto))`.
+
+6. **Internal Processing:** The `application`, `core`, and `infrastructure` layers perform the real work.
+
+7. **Response Formatting:** The controller returns the result. NestJS serializes the object to JSON and sends the response with the proper status code (`201` for POST, `200` for GET).
+
+---
+
+# Conclusion and Project Repository
+
+Clean Architecture is not just a way to organize files; it’s a philosophy that promotes clarity, maintainability, and long-term evolution. Although it may seem more complex than other approaches at first, its benefits become evident as the project grows, becomes more modular, and needs to adapt to new technologies without breaking its core.
+
+If you’d like to see a full implementation based on what was explained in this article, I invite you to explore the project repository:
+
+GitHub Repository: [https://github.com/alanlb195/clean-architecture-template](https://github.com/alanlb195/clean-template-nest)
+
+In this repository, you’ll find the complete structure, real examples, use cases, repositories, services, and everything you need to use this template as a foundation for your own NestJS projects.

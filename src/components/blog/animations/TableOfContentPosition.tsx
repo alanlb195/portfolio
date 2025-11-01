@@ -13,7 +13,7 @@ export default function TableOfContentPosition() {
 
       const mainRect = main.getBoundingClientRect();
       const containerLeft = mainRect.left;
-      const gap = 16;
+      const gap = 20;
 
       const left = Math.max(12, containerLeft - toc.offsetWidth - gap);
       toc.style.left = `${left}px`;

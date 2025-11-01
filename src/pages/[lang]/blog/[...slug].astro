@@ -17,7 +17,6 @@ const frontmatter = page.data;
 const { Content, headings } = await page.render();
 const postUrl = `https://www.alandev.site/${lang}/blog/${slug}`;
 
-// Tipar las props del layout (opcional, pero recomendado)
 const layoutProps: MainLayoutProps = {
     title: frontmatter.title,
     description: frontmatter.description,
@@ -29,46 +28,39 @@ const layoutProps: MainLayoutProps = {
 ---
 
 <MainLayout {...layoutProps}>
-
     <!-- Table of content-->
     {
-        Astro.request.headers
-            .get("user-agent")
-            ?.includes("Mobile") ? null : (
+        Astro.request.headers.get("user-agent")?.includes("Mobile") ? null : (
             <TableOfContent slot="fixed" headings={headings} />
         )
     }
 
     <!-- Blog-slug Content -->
-    <section
-      class="blog relative mx-auto xl:pl-[13rem] 2xl:pl-0"
-    >
-
+    <section class="blog relative mx-auto xl:pl-[13rem] 2xl:pl-0">
         <div class="flex-1 w-full min-w-0">
             <Button
                 href={`/${lang}/blog`}
                 className="btn mt-5"
                 label="Regresar"
                 icon={FaArrowLeft}
-                variant="ghost"
+                variant="outline"
             />
-
-            <div class="relative mb-8 rounded-2xl overflow-hidden shadow-lg">
-                <Image
-                    width={1200}
-                    height={500}
-                    transition:name={`${frontmatter.image}-image`}
-                    class="w-full h-80 sm:h-96 object-cover"
-                    src={`/blog/${frontmatter.image}`}
-                    alt={frontmatter.image}
-                />
-            </div>
-
             <h1
                 class="text-4xl font-extrabold mb-4 text-zinc-900 dark:text-zinc-100 leading-tight"
             >
                 {frontmatter.title}
             </h1>
+
+            <div class="relative mb-8 overflow-hidden w-[800px]">
+                <Image
+                    width={800}
+                    height={500}
+                    transition:name={`${frontmatter.image}-image`}
+                    class="w-full h-80 sm:h-96 object-cover rounded-2xl"
+                    src={`/blog/${frontmatter.image}`}
+                    alt={frontmatter.image}
+                />
+            </div>
 
             <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-12">
                 {lang === "en" ? "Published:" : "Publicado el:"}{" "}

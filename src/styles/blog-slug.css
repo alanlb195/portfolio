@@ -25,14 +25,13 @@
 
 .blog h1 {
   font-size: 2.25rem;
-  color: var(--color-blue-600, #2563eb);
-  border-bottom: 3px solid var(--color-blue-500, #3b82f6);
+  color: var(--color-zinc-700);
   padding-bottom: 0.5rem;
 }
 
 .blog h2 {
   font-size: 1.75rem;
-  color: var(--color-blue-500, #3b82f6);
+  color: var(--color-zinc-700);
   position: relative;
 }
 
@@ -43,23 +42,23 @@
   top: 0.75rem;
   width: 6px;
   height: 6px;
-  background-color: var(--color-blue-500, #3b82f6);
+  background-color: var(--color-zinc-500);
   border-radius: 50%;
 }
 
+
 .blog h3 {
   font-size: 1.4rem;
-  color: var(--color-blue-600, #2563eb);
+  color: var(--color-zinc-600);
 }
 
 .dark .blog h1 {
-  color: var(--color-blue-300, #93c5fd);
-  border-color: var(--color-blue-400, #60a5fa);
+  color: var(--color-slate-300);
 }
 
 .dark .blog h2,
 .dark .blog h3 {
-  color: var(--color-blue-300, #93c5fd);
+  color: var(--color-zinc-300);
 }
 
 /* --- Párrafos y enlaces --- */
@@ -138,10 +137,21 @@
   border-radius: 0.3rem;
   font-size: 0.9rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background-color: var(--color-gray-300);
+  color: var(--color-black);
 }
 
-.dark .blog code {
-  color: var(--color-gray-100, #f8fafc);
+.blog pre code {
+  background-color: transparent;
+}
+
+.dark code {
+  color: var(--color-zinc-600);
+  background-color: var(--color-zinc-200);
+}
+
+.dark .blog pre code {
+  background-color: transparent;
 }
 
 .blog pre {
@@ -157,15 +167,6 @@
 .dark .blog pre {
   background: var(--color-gray-800, #1f2937);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-}
-
-/* --- Imágenes --- */
-.blog img {
-  border-radius: 0.75rem;
-  margin: 1.5rem auto;
-  display: block;
-  max-width: 100%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* --- Separador (hr) --- */
